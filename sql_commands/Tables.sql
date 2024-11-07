@@ -1,4 +1,4 @@
-#_______________CREATE TABLE FOR USERS__________________
+/*_______________CREATE TABLE FOR USERS__________________*/
 CREATE TABLE `titan_rigs`.`users` (
   `id` INT NOT NULL,
   `firsrt_name` VARCHAR(45) NOT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE `titan_rigs`.`users` (
   `role` ENUM('admin', 'editor', 'customer') NULL,
   PRIMARY KEY (`id`));
   
-#_______________CREATE TABLE FOR ADDRESSES_______________
+/*_______________CREATE TABLE FOR ADDRESSES_______________*/
   CREATE TABLE `titan_rigs`.`addresses` (
   `address_id` INT NOT NULL AUTO_INCREMENT,
   `street` VARCHAR(45) NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE `titan_rigs`.`users` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
     
-#_______________CREATE TABLE FOR CATEGORIES__________________
+/*_______________CREATE TABLE FOR CATEGORIES__________________*/
     CREATE TABLE `titan_rigs`.`categories` (
   `categories_id` INT NULL AUTO_INCREMENT,
   `name` VARCHAR(255) NOT NULL,
