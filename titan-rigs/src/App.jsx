@@ -6,19 +6,24 @@ import CategoriesSection from './components/CategoriesSection';
 import Footer from './components/Footer';
 import LoginPage from './components/LoginPage';  // Make sure LoginPage is correctly imported
 
-function App() {
+const App = () => {
   return (
     <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<HeroSection />} />
-        <Route path="/login" element={<LoginPage />} />  {/* Correct route for LoginPage */}
-        {/* Add other routes as necessary */}
-      </Routes>
-      <CategoriesSection />
-      <Footer />
+      <div className="app-container">
+        <Navbar />
+        <Routes>
+          <Route path="/" element={
+            <>
+              <div className="hero-section">Hero Section Placeholder</div>
+              <CategoriesSection />
+            </>
+          } />
+          <Route path="/login" element={<LoginPage />} />
+        </Routes>
+        <Footer />
+      </div>
     </Router>
   );
-}
+};
 
 export default App;
