@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom'; // Use Link for navigation
 
 const Navbar = () => {
+  
   return (
     <nav className="bg-secondary text-textMain py-4 shadow-md">
       <div className="container mx-auto flex justify-between items-center">

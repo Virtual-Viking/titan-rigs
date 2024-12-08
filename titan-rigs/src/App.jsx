@@ -14,7 +14,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={
             <>
-              <div className="hero-section">Hero Section Placeholder</div>
+              {/* <div className="hero-section">Hero Section Placeholder</div> */}
               <CategoriesSection />
             </>
           } />
