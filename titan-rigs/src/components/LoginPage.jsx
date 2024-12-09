@@ -8,7 +8,11 @@ const LoginPage = ({ onClose }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
+
+  const handleSwitchForm = () => {
+    setIsSignUp(!isSignUp);
+    setError(""); // Reset error on form switch
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,13 +40,11 @@ const LoginPage = ({ onClose }) => {
       const data = await response.json();
 
       if (isSignUp) {
-        setSuccess(true);
         alert("Registration successful! Please log in.");
         setIsSignUp(false);
       } else {
         localStorage.setItem("token", data.token);
-        alert("Login successful!");
-        onClose();
+        window.location.reload();
       }
     } catch (err) {
       setError(err.message || "Unexpected error occurred");
@@ -50,9 +52,13 @@ const LoginPage = ({ onClose }) => {
   };
 
   return (
-    <div className="popup-overlay">
-      <div className="popup-container">
-        <button className="popup-close" onClick={onClose}>
+    <div className="popup-overlay" onClick={onClose}>
+      <div className="popup-container" onClick={(e) => e.stopPropagation()}>
+        <button
+          className="popup-close"
+          onClick={onClose}
+          aria-label="Close login popup"
+        >
           ✖
         </button>
         <div className="form-container">
@@ -103,9 +109,7 @@ const LoginPage = ({ onClose }) => {
             className="switch-btn"
             onClick={() => setIsSignUp((prev) => !prev)}
           >
-            {isSignUp
-              ? "Already have an account? Sign In"
-              : "Create an Account"}
+            {isSignUp ? "Already have an account? Sign In" : "Create an Account"}
           </button>
         </div>
       </div>
