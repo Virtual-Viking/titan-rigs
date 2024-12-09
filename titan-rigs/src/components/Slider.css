@@ -1,0 +1,89 @@
+/* Slider Wrapper */
+.slider-wrapper {
+  position: relative;
+  width: 100%;
+  height: 450px; /* Adjust slider height */
+  overflow: hidden;
+}
+
+/* Slider Background Bleed */
+.slider-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw; /* Extends background to full width */
+  height: 100%;
+  z-index: -1; /* Behind the slider */
+}
+
+/* Departments Container */
+.departments-container {
+  position: absolute;
+  top: 0;
+  left: calc((100vw - 1920px) / 2); /* Align within 1920px boundary */
+  width: 240px;
+  background-color: #fff;
+  z-index: 2;
+}
+
+.departments-header {
+  background-color: #ffc107;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 10px;
+}
+
+.departments-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.departments-list li {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.departments-list li:hover {
+  background-color: #f1f1f1;
+}
+
+/* Image Slider */
+.slider {
+  position: relative;
+  width: calc(100% - 250px); /* Exclude department list */
+  height: 100%;
+  margin-left: 250px;
+  z-index: 1;
+}
+
+.slider-image {
+  width: auto;
+  height: 100%; /* Preserve aspect ratio */
+  margin: 0 auto; /* Center horizontally */
+  display: block;
+}
+
+.slider-text {
+  position: absolute;
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  font-size: 36px;
+  font-weight: bold;
+  color: #fff;
+}
+
+/* Pause Button */
+.pause-button {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
