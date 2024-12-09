@@ -1,24 +1,30 @@
 /* Top Navbar */
 .top-navbar {
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 10px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.navbar-content {
+  width: 90%; /* Matches the alignment requirements */
+  max-width: 1920px; /* Restricts content to 1920px width */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 5px 20px; /* Slimmer padding for a narrow navbar */
-  background-color: #f5f5f5;
-  border-bottom: 1px solid #e0e0e0; /* Subtle border for separation */
-  font-size: 14px;
 }
 
-.top-navbar-left {
+.navbar-left {
   color: #333;
   font-size: 14px;
   font-weight: 500;
 }
 
-.top-navbar-right {
+.navbar-right {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 15px;
 }
 
 .navbar-icon {
@@ -29,59 +35,34 @@
   font-size: 14px;
   font-weight: 500;
   gap: 5px;
-  transition: color 0.3s ease;
+  white-space: nowrap; /* Prevents text from wrapping */
 }
 
 .navbar-icon img {
-  height: 18px;
+  height: 18px; /* Match icon sizes */
   width: 18px;
 }
 
-.navbar-icon:hover {
-  color: #555;
-}
-
-/* User dropdown */
-.navbar-user-dropdown {
-  position: relative;
-  cursor: pointer;
-}
-
-.navbar-user-icon {
-  height: 30px;
-  width: 30px;
-  cursor: pointer;
-  border-radius: 50%;
+.navbar-divider {
+  height: 20px;
+  width: 1px;
   background-color: #ccc;
 }
 
-.navbar-dropdown-menu {
-  position: absolute;
-  top: 40px;
-  right: 0;
-  background-color: #fff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 10px;
-  border-radius: 8px;
-  z-index: 10;
-  display: none;
-}
-
-.navbar-user-dropdown:hover .navbar-dropdown-menu,
-.navbar-user-dropdown:focus-within .navbar-dropdown-menu {
-  display: block;
-}
-
-.logout-btn {
-  background-color: #f44336;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 5px;
+.navbar-user-dropdown {
+  display: flex;
+  align-items: center;
   cursor: pointer;
-  font-size: 14px;
+  gap: 5px;
+  position: relative;
 }
 
-.logout-btn:hover {
-  background-color: #d32f2f;
+.navbar-user-dropdown img {
+  height: 18px; /* Matches other icons */
+  width: 18px;
+}
+
+.navbar-user-dropdown span {
+  font-size: 14px;
+  color: #333;
 }

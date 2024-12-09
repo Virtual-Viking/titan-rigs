@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import SearchBar from './components/SearchBar';
+import Slider from './components/Slider';
 import HeroSection from './components/HeroSection';
 import CategoriesSection from './components/CategoriesSection';
 import Footer from './components/Footer';
@@ -11,6 +13,8 @@ const App = () => {
     <Router>
       <div className="app-container">
         <Navbar />
+        <SearchBar/>
+        <Slider/>
         <Routes>
           <Route path="/" element={
             <>
