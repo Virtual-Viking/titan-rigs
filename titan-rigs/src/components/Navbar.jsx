@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./Navbar.css";
-import trackIcon from "/src/assets/dolly-flatbed.svg";
-import cartIcon from "/src/assets/shopping-cart.svg";
-import userIcon from "/src/assets/people.svg";
-import wishlistIcon from "/src/assets/wishlist.svg"; // Wishlist icon
+import LoginModal from "./LoginPage"; // Ensure this points to the correct Login Modal component
+import userIcon from "../assets/people.svg";
+import cartIcon from "../assets/shopping-cart.svg";
+import trackIcon from "../assets/dolly-flatbed.svg";
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isLoginOpen, setIsLoginOpen] = useState(false); // State for the login/signup popup
+  const [isLoginOpen, setIsLoginOpen] = useState(false); // State for login/signup popup
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -30,57 +30,56 @@ const Navbar = () => {
     window.location.reload(); // Refresh the page after logout
   };
 
-  const isLoggedIn = Boolean(localStorage.getItem("token"));
+  const isLoggedIn = Boolean(localStorage.getItem("token")); // Check if user is logged in
 
   return (
     <div className="top-navbar">
       <div className="navbar-content">
-        <div className="navbar-left">
-          <span>Titan-Rigs: One stop solution for all computer needs.</span>
-        </div>
+        {/* Left Section */}
+        <div className="navbar-left">Titan-Rigs: One stop solution for all computer needs.</div>
+
+        {/* Right Section */}
         <div className="navbar-right">
           <a href="/track-order" className="navbar-icon">
             <img src={trackIcon} alt="Track Order" />
-            <span>Track Your Package</span>
+            Track Your Package
           </a>
-          {isLoggedIn && (
-            <>
-              <div className="navbar-divider"></div>
-              <a href="/wishlist" className="navbar-icon">
-                <img src={wishlistIcon} alt="Wishlist" />
-                <span>Wishlist</span>
-              </a>
-            </>
-          )}
           <div className="navbar-divider"></div>
           <a href="/cart" className="navbar-icon">
-            <img src={cartIcon} alt="Shopping Cart" />
-            <span>Cart</span>
+            <img src={cartIcon} alt="Cart" />
+            Cart
           </a>
           <div className="navbar-divider"></div>
+
+          {/* User Icon */}
           <div
             className="navbar-user-dropdown"
             ref={dropdownRef}
-            onClick={() => (isLoggedIn ? setIsDropdownOpen(!isDropdownOpen) : setIsLoginOpen(true))}
+            onClick={() => {
+              if (isLoggedIn) {
+                setIsDropdownOpen(!isDropdownOpen);
+              } else {
+                setIsLoginOpen(true); // Open login/signup modal for non-logged-in users
+              }
+            }}
           >
-            <img
-              src={userIcon}
-              alt="User"
-              className={`navbar-user-icon ${
-                isLoggedIn ? "logged-in" : "logged-out"
-              }`}
-            />
+            <img src={userIcon} alt="User" />
             <span>{isLoggedIn ? "My Account" : "Login"}</span>
-            {isDropdownOpen && isLoggedIn && (
-              <div className="navbar-dropdown-menu">
-                <button onClick={handleLogout} className="logout-btn">
-                  Logout
-                </button>
-              </div>
-            )}
           </div>
+
+          {/* Dropdown */}
+          {isDropdownOpen && isLoggedIn && (
+            <div className="dropdown-menu">
+              <button className="dropdown-item" onClick={handleLogout}>
+                Logout
+              </button>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Login/Signup Modal */}
+      {isLoginOpen && <LoginModal onClose={() => setIsLoginOpen(false)} />}
     </div>
   );
 };

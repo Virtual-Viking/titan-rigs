@@ -1,54 +1,54 @@
-/* Top Navbar */
+/* Navbar Container */
 .top-navbar {
-  background-color: #f5f5f5;
-  border-bottom: 1px solid #e0e0e0;
-  padding: 10px 0;
-  display: flex;
-  justify-content: center;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #ddd;
+  padding: 10px 20px;
+  position: relative;
+  z-index: 100;
 }
 
 .navbar-content {
-  width: 90%; /* Matches the alignment requirements */
-  max-width: 1920px; /* Restricts content to 1920px width */
   display: flex;
   justify-content: space-between;
   align-items: center;
+  max-width: 1920px;
+  margin: 0 auto;
 }
 
+/* Left Section */
 .navbar-left {
-  color: #333;
   font-size: 14px;
-  font-weight: 500;
+  color: #333;
 }
 
+/* Right Section */
 .navbar-right {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 10px;
 }
 
 .navbar-icon {
   display: flex;
   align-items: center;
+  font-size: 14px;
   text-decoration: none;
   color: #333;
-  font-size: 14px;
-  font-weight: 500;
-  gap: 5px;
-  white-space: nowrap; /* Prevents text from wrapping */
 }
 
 .navbar-icon img {
-  height: 18px; /* Match icon sizes */
-  width: 18px;
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
 }
 
 .navbar-divider {
-  height: 20px;
   width: 1px;
-  background-color: #ccc;
+  height: 20px;
+  background-color: #ddd;
 }
 
+/* User Dropdown */
 .navbar-user-dropdown {
   display: flex;
   align-items: center;
@@ -58,11 +58,43 @@
 }
 
 .navbar-user-dropdown img {
-  height: 18px; /* Matches other icons */
+  height: 18px;
   width: 18px;
 }
 
 .navbar-user-dropdown span {
   font-size: 14px;
   color: #333;
+}
+
+.navbar-user-dropdown:hover {
+  color: #007bff; /* Optional hover color */
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  padding: 10px;
+  z-index: 10;
+}
+
+.dropdown-item {
+  padding: 8px 10px;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
 }
