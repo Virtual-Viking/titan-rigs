@@ -74,7 +74,7 @@ const Slider = () => {
           <li>Graphic card</li>
           <li>Power Supply</li>
           <li>Monitor</li>
-          <li>O ther components</li>
+          <li>Other components</li>
         </ul>
       </div>
 

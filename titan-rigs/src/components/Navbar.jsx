@@ -4,6 +4,7 @@ import LoginModal from "./LoginPage"; // Ensure this points to the correct Login
 import userIcon from "../assets/people.svg";
 import cartIcon from "../assets/shopping-cart.svg";
 import trackIcon from "../assets/dolly-flatbed.svg";
+import wishlistIcon from "../assets/wishlist.svg"; // Wishlist icon
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -45,6 +46,18 @@ const Navbar = () => {
             Track Your Package
           </a>
           <div className="navbar-divider"></div>
+
+          {/* Wishlist Icon: Visible only when logged in */}
+          {isLoggedIn && (
+            <>
+              <a href="/wishlist" className="navbar-icon">
+                <img src={wishlistIcon} alt="Wishlist" />
+                Wishlist
+              </a>
+              <div className="navbar-divider"></div>
+            </>
+          )}
+
           <a href="/cart" className="navbar-icon">
             <img src={cartIcon} alt="Cart" />
             Cart

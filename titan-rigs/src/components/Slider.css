@@ -20,7 +20,7 @@
 .departments-container {
   position: absolute;
   top: 0;
-  left: calc((100vw - 1920px) / 2); /* Align within 1920px boundary */
+  left: calc((100vw - 1280px) / 2); /* Align within 1920px boundary */
   width: 240px;
   background-color: #fff;
   z-index: 2;
