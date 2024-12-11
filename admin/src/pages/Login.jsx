@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import loginBg from "../assets/login_bg.svg"; // Ensure the file path is correct
 import logoIcon from "../assets/icon.svg"; // Ensure the file path is correct
@@ -8,10 +9,11 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // Clear previous error
+    setError(""); 
 
     try {
       const response = await axios.post("http://localhost:5000/api/login", {
@@ -23,9 +25,8 @@ const Login = () => {
       const { token } = response.data;
       localStorage.setItem("authToken", token);
 
-      // Redirect or handle login success
-      alert("Login successful!");
-      window.location.href = "/dashboard"; // Adjust redirect as needed
+
+      window.location.href = "/AdminDashboard"; // Adjust redirect as needed
     } catch (err) {
       // Set error message
       setError(

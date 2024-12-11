@@ -1,41 +1,32 @@
 import React, { useState } from "react";
-import AdminSidebar from "../components/AdminSidebar";
-import AdminHeader from "../components/AdminHeader";
-import Overview from "../components/Overview";
-import ManageProducts from "../components/ManageProducts";
-import ManageOrders from "../components/ManageOrders";
-import SalesAnalytics from "../components/SalesAnalytics";
-import UsersManagement from "../components/UsersManagement";
-import Settings from "../components/Settings";
+import AdminSidebar from "../pages/AdminSidebar";
+import AdminHeader from "../pages/AdminHeader";
+// import Overview from "../pages/Overview";
+// import ManageProducts from "../pages/ManageProducts";
+// import ManageOrders from "../pages/ManageOrders";
+// import SalesAnalytics from "../pages/SalesAnalytics";
+// import UsersManagement from "../pages/UsersManagement";
+// import Settings from "../pages/Settings";
+import "./AdminDashboard.css";
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState("Overview");
-
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case "Overview":
-        return <Overview />;
-      case "ManageProducts":
-        return <ManageProducts />;
-      case "ManageOrders":
-        return <ManageOrders />;
-      case "SalesAnalytics":
-        return <SalesAnalytics />;
-      case "UsersManagement":
-        return <UsersManagement />;
-      case "Settings":
-        return <Settings />;
-      default:
-        return <Overview />;
-    }
-  };
-
   return (
     <div className="admin-dashboard">
-      <AdminSidebar setActiveTab={setActiveTab} activeTab={activeTab} />
+      <div className="admin-sidebar">
+        <h2>Admin Panel</h2>
+        <ul>
+          <li className="active">Dashboard</li>
+          <li>Orders</li>
+          <li>Add Product</li>
+          <li>Settings</li>
+        </ul>
+      </div>
       <div className="main-content">
-        <AdminHeader />
-        {renderTabContent()}
+        <div className="admin-header">
+          <h1>Welcome to Admin Dashboard</h1>
+          <input type="text" placeholder="Search..." />
+        </div>
+        <p>This is a placeholder for dashboard content.</p>
       </div>
     </div>
   );

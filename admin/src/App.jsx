@@ -1,15 +1,18 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Login from "./pages/Login"; // Adjust the path based on your folder structure
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Login from "./pages/Login";
+import AdminDashboard from "./pages/AdminDashboard";
 import "./App.css";
 
 function App() {
   return (
     <Router>
-      <Routes>
-        {/* Define the route for the login page */}
-        <Route path="/" element={<Login />} />
-        {/* Add more routes as needed for your application */}
-      </Routes>
+      <div id="root">
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/AdminDashboard" element={<AdminDashboard />} />
+        </Routes>
+      </div>
     </Router>
   );
 }
