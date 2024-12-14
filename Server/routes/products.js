@@ -2,19 +2,15 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const path = require("path");
-const mysql = require('mysql2');
+const mysql = require("mysql2/promise"); // Use promise-based MySQL
 
-const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-});
+// Import db connection (ensure this is properly set up in your project)
+const db = require("../db"); // Adjust the path as per your project structure
 
 // Storage configuration for image upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "./uploads/");
+    cb(null, "./uploads/"); // Adjust this path as needed
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
@@ -23,63 +19,79 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.get('/api/products', async (req, res) => {
-  const { page = 1, category = 'all', search = '' } = req.query;
-  const limit = 20; // Items per page
-  const offset = (page - 1) * limit;
+// GET: Fetch Products
+router.get("/", async (req, res) => {
+  const { page = 1, search } = req.query;
+  const itemsPerPage = 20;
+  const offset = (page - 1) * itemsPerPage;
+
+  let query = `
+    SELECT 'aio' AS category, id, name, price, brand FROM aio
+    UNION ALL
+    SELECT 'cabinet', id, name, price, brand FROM cabinet
+    UNION ALL
+    SELECT 'gpu', id, name, price, Brand FROM gpu
+    UNION ALL
+    SELECT 'processors', id, name, price, vendor FROM processors
+    UNION ALL
+    SELECT 'psu', id, name, price, brand FROM psu
+    UNION ALL
+    SELECT 'ram', id, name, price, brand FROM ram
+    UNION ALL
+    SELECT 'ssd', id, name, price, brand FROM ssd
+    ORDER BY category, id
+    LIMIT ? OFFSET ?`;
+
+  let values = [itemsPerPage, offset];
+
+  if (search) {
+    query = `
+      SELECT * FROM (
+        SELECT 'aio' AS category, id, name, price, brand FROM aio
+        UNION ALL
+        SELECT 'cabinet', id, name, price, brand FROM cabinet
+        UNION ALL
+        SELECT 'gpu', id, name, price, Brand FROM gpu
+        UNION ALL
+        SELECT 'processors', id, name, price, vendor FROM processors
+        UNION ALL
+        SELECT 'psu', id, name, price, brand FROM psu
+        UNION ALL
+        SELECT 'ram', id, name, price, brand FROM ram
+        UNION ALL
+        SELECT 'ssd', id, name, price, brand FROM ssd
+      ) AS all_products
+      WHERE name LIKE ?
+      ORDER BY category, id
+      LIMIT ? OFFSET ?`;
+    values = [`%${search}%`, itemsPerPage, offset];
+  }
 
   try {
-    let query = '';
-    if (category === 'all') {
-      // Combine data from all tables
-      query = `
-        SELECT 'aio' AS category, id, name, price FROM aio
-        UNION ALL
-        SELECT 'cabinet' AS category, id, name, price FROM cabinet
-        UNION ALL
-        SELECT 'gpu' AS category, id, name, price FROM gpu
-        UNION ALL
-        SELECT 'motherboard' AS category, id, name, price FROM motherboard
-        UNION ALL
-        SELECT 'processors' AS category, id, name, price FROM processors
-        UNION ALL
-        SELECT 'psu' AS category, id, name, price FROM psu
-        UNION ALL
-        SELECT 'ram' AS category, id, name, price FROM ram
-        UNION ALL
-        SELECT 'ssd' AS category, id, name, price FROM ssd
-        WHERE name LIKE ? LIMIT ? OFFSET ?`;
-      const products = await db.query(query, [`%${search}%`, limit, offset]);
-      res.json({ products });
-    } else {
-      // Query specific table
-      const query = `
-        SELECT '${category}' AS category, id, name, price
-        FROM ${category}
-        WHERE name LIKE ? LIMIT ? OFFSET ?`;
-      const products = await db.query(query, [`%${search}%`, limit, offset]);
-      res.json({ products });
-    }
+    const [rows] = await db.execute(query, values);
+    res.json({ products: rows });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
+    console.error("SQL Query Error:", err.message);
+    res.status(500).json({ error: "Server error" });
   }
 });
 
-// POST: Add new product
-router.post("/", upload.single("image"), (req, res) => {
-  const { name, description, price, category } = req.body;
+
+// POST: Add New Product
+router.post("/", upload.single("image"), async (req, res) => {
+  const { name, price, category } = req.body;
   const image = req.file ? req.file.filename : null;
 
-  // Here you would save the product to your database
-  // Assuming a MongoDB example with Mongoose
-  const Product = require("../models/Product");
-  const newProduct = new Product({ name, description, price, category, image });
-
-  newProduct
-    .save()
-    .then(() => res.status(201).json({ message: "Product added successfully!" }))
-    .catch((error) => res.status(500).json({ message: "Failed to add product", error }));
+  try {
+    const query = `
+      INSERT INTO ${mysql.escapeId(category)} (name, price, image)
+      VALUES (?, ?, ?)`;
+    await db.execute(query, [name, price, image]);
+    res.status(201).json({ message: "Product added successfully!" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to add product" });
+  }
 });
 
 module.exports = router;

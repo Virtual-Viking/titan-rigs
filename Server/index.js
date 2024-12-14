@@ -3,20 +3,22 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
-
 const mysql = require('mysql2');
-const productsRoute = require("./routes/products");
-require('dotenv').config();
 
+// Import routes
+const productsRoute = require("./routes/products"); // Correctly importing the route
+require('dotenv').config();
 const app = express();
+
+// Middleware
 app.use(cors());
 app.use(express.json());
-app.use("/api/products", productsRoute);
 
-
+// Register the routes
+app.use("/api/products", productsRoute); // Ensure this is the only route registration for products
 app.use("/uploads", express.static("uploads"));
 
-
+// Database connection
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -24,6 +26,7 @@ const db = mysql.createConnection({
   database: process.env.DB_NAME,
 });
 
+// Multer setup for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'C:/Users/princ/Documents/TITAN-RIGS/titan-rigs/src/assets/products/'); // Set path to store images
@@ -47,6 +50,7 @@ const upload = multer({
   }
 });
 
+// File upload API
 app.post('/api/upload', upload.single('image'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: 'No file uploaded' });
@@ -57,7 +61,7 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
   });
 });
 
-
+// Authentication routes
 app.post('/api/register', async (req, res) => {
   const { first_name, last_name, email, password } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -91,5 +95,6 @@ app.post('/api/login', (req, res) => {
   });
 });
 
+// Server setup
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
