@@ -6,6 +6,7 @@ import pauseAnimation from "/src/assets/pause.json";
 const Slider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const departments = ["Processor", "GPU", "Motherboard", "Monitor"];
   const slides = [
     {
       id: 1,
@@ -54,6 +55,7 @@ const Slider = () => {
   const handlePauseClick = () => {
     setIsPaused((prev) => !prev);
   };
+  
 
   return (
     <div className="slider-wrapper">
@@ -66,16 +68,17 @@ const Slider = () => {
       {/* Departments List */}
       <div className="departments-container">
         <div className="departments-header">Departments</div>
-        <ul className="departments-list">
-          <li>Processor</li>
-          <li>Motherboard</li>
-          <li>RAM</li>
-          <li>Storage</li>
-          <li>Graphic card</li>
-          <li>Power Supply</li>
-          <li>Monitor</li>
-          <li>Other components</li>
-        </ul>
+        <div className="department-list">
+        {departments.map((department) => (
+          <button
+            key={department}
+            className="department-button"
+            onClick={() => onCategoryChange(department.toLowerCase())}
+          >
+            {department}
+          </button>
+        ))}
+      </div>
       </div>
 
       {/* Image Slider */}

@@ -1,0 +1,36 @@
+.category-tiles-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  
+  .category-tiles-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    width: 100%;
+    padding: 20px;
+  }
+  
+  .category-tile {
+    width: calc(25% - 15px); /* Four tiles in a row with 20px gap */
+    cursor: pointer;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .category-tile:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .category-tile img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  

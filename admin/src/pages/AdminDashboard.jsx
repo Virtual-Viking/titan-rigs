@@ -1,6 +1,8 @@
-import React, { useState } from "react";
-import AdminSidebar from "../pages/AdminSidebar";
-import AdminHeader from "../pages/AdminHeader";
+import React from "react";
+import { Outlet } from "react-router-dom";
+import AdminSidebar from "./AdminSidebar";
+import AdminHeader from "./AdminHeader";
+import AddProduct from "./AddProduct";
 // import Overview from "../pages/Overview";
 // import ManageProducts from "../pages/ManageProducts";
 // import ManageOrders from "../pages/ManageOrders";
@@ -12,21 +14,10 @@ import "./AdminDashboard.css";
 const AdminDashboard = () => {
   return (
     <div className="admin-dashboard">
-      <div className="admin-sidebar">
-        <h2>Admin Panel</h2>
-        <ul>
-          <li className="active">Dashboard</li>
-          <li>Orders</li>
-          <li>Add Product</li>
-          <li>Settings</li>
-        </ul>
-      </div>
-      <div className="main-content">
-        <div className="admin-header">
-          <h1>Welcome to Admin Dashboard</h1>
-          <input type="text" placeholder="Search..." />
-        </div>
-        <p>This is a placeholder for dashboard content.</p>
+      <AdminSidebar />
+      <div className="admin-main-content">
+        <AdminHeader />
+        <Outlet /> {/* Renders the nested routes */}
       </div>
     </div>
   );

@@ -24,6 +24,40 @@ const db = mysql.createConnection({
   database: process.env.DB_NAME,
 });
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'C:/Users/princ/Documents/TITAN-RIGS/titan-rigs/src/assets/products/'); // Set path to store images
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + '-' + file.originalname); // Ensure unique filenames
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    const filetypes = /jpeg|jpg|png/;
+    const mimetype = filetypes.test(file.mimetype);
+    const extname = filetypes.test(file.originalname.toLowerCase());
+    if (mimetype && extname) {
+      return cb(null, true);
+    }
+    cb(new Error('Only .jpeg, .jpg, and .png files are allowed!'));
+  }
+});
+
+app.post('/api/upload', upload.single('image'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: 'No file uploaded' });
+  }
+  res.status(201).json({ 
+    message: 'Image uploaded successfully', 
+    filePath: `/assets/products/${req.file.filename}` // Adjust path for front-end reference
+  });
+});
+
+
 app.post('/api/register', async (req, res) => {
   const { first_name, last_name, email, password } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);

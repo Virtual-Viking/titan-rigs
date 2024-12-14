@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+// import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
@@ -11,9 +12,17 @@ const Login = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Check for an existing token in localStorage
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      navigate("/admin-dashboard");
+    }
+  }, [navigate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); 
+    setError("");
 
     try {
       const response = await axios.post("http://localhost:5000/api/login", {
@@ -25,8 +34,7 @@ const Login = () => {
       const { token } = response.data;
       localStorage.setItem("authToken", token);
 
-
-      window.location.href = "/AdminDashboard"; // Adjust redirect as needed
+      navigate("/admin-dashboard"); // Redirect to Admin Dashboard
     } catch (err) {
       // Set error message
       setError(
