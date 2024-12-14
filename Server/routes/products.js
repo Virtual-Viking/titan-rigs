@@ -83,12 +83,52 @@ const upload = multer({ storage });
 
 // trial api
 router.get("/", async (req, res) => {
-  const query = `
+  const { page = 1, search } = req.query;
+  const itemsPerPage = 20;
+  const offset = (page - 1) * itemsPerPage;
+
+  let query = `
     SELECT 'aio' AS category, id, name, price, brand, qty FROM aio
-    LIMIT 10
+    UNION ALL
+    SELECT 'cabinet', id, name, price, brand, qty FROM cabinet
+    UNION ALL
+    SELECT 'gpu', id, name, price, brand, qty FROM gpu
+    UNION ALL
+    SELECT 'processors', id, name, price, brand, qty FROM processors
+    UNION ALL
+    SELECT 'psu', id, name, price, brand, qty FROM psu
+    UNION ALL
+    SELECT 'ram', id, name, price, brand, qty FROM ram
+    UNION ALL
+    SELECT 'ssd', id, name, price, brand, qty FROM ssd
+    LIMIT ${itemsPerPage} OFFSET ${offset};
   `;
 
+  if (search) {
+    query = `
+      SELECT * FROM (
+        SELECT 'aio' AS category, id, name, price, brand, qty FROM aio
+        UNION ALL
+        SELECT 'cabinet', id, name, price, brand, qty FROM cabinet
+        UNION ALL
+        SELECT 'gpu', id, name, price, brand, qty FROM gpu
+        UNION ALL
+        SELECT 'processors', id, name, price, brand, qty FROM processors
+        UNION ALL
+        SELECT 'psu', id, name, price, brand, qty FROM psu
+        UNION ALL
+        SELECT 'ram', id, name, price, brand, qty FROM ram
+        UNION ALL
+        SELECT 'ssd', id, name, price, brand, qty FROM ssd
+      ) AS all_products
+      WHERE name LIKE '%${search}%'
+      LIMIT ${itemsPerPage} OFFSET ${offset};
+    `;
+  }
+
   try {
+    console.log("SQL Query:", query);
+
     const [rows] = await db.execute(query);
     res.json({ products: rows });
   } catch (err) {
@@ -96,6 +136,10 @@ router.get("/", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
+
+
+
 
 
 // POST: Add New Product
