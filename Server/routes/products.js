@@ -154,7 +154,7 @@ router.get("/images/:productType/:productId", async (req, res) => {
 
   try {
     const [rows] = await db.execute(query, [productType, productId]);
-    console.log("Fetched Image URL:", rows);
+    // console.log("Fetched Image URL:", rows);
     if (rows.length > 0) {
       res.json({ image_url: rows[0].image_url });
     } else {

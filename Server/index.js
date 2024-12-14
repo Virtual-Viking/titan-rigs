@@ -9,7 +9,6 @@ const mysql = require('mysql2');
 const productsRoute = require("./routes/products"); // Correctly importing the route
 require('dotenv').config();
 const app = express();
-
 // Middleware
 app.use(cors());
 app.use(express.json());
