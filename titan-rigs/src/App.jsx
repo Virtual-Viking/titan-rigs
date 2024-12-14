@@ -3,33 +3,20 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import SearchBar from "./components/SearchBar";
 import Slider from "./components/Slider";
-import CategoryTiles from "./components/CategoryTiles";
 import Footer from "./components/Footer";
 import ProductGrid from "./components/ProductGrid";
-import LoginPage from "./components/LoginPage";
+import ProductPage from "./components/ProductPage";
 
 const App = () => {
-  const [products, setProducts] = useState([]);
-  const [category, setCategory] = useState("all");
+  const [category, setCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
 
-  const handleSearch = async (query) => {
-    setSearchQuery(query);
-    // Fetch products matching the search query
-    const response = await fetch(
-      `/api/products?search=${query}&category=${category}`
-    );
-    const data = await response.json();
-    setProducts(data);
+  const handleCategoryChange = (newCategory) => {
+    setCategory(newCategory);
   };
 
-  const handleCategoryChange = async (newCategory) => {
-    setCategory(newCategory);
-    // Fetch products for the selected category
-    const response = await fetch(`/api/products?category=${newCategory}`);
-    const data = await response.json();
-    setProducts(data);
+  const handleSearch = (query) => {
+    setSearchQuery(query);
   };
 
   return (
@@ -38,19 +25,17 @@ const App = () => {
         <Navbar />
         <SearchBar onSearch={handleSearch} />
         <Slider onCategoryChange={handleCategoryChange} />
-        <CategoryTiles onCategoryChange={handleCategoryChange} />
         <Routes>
           <Route
             path="/"
             element={
               <ProductGrid
-                products={products}
                 category={category}
-                searchQuery={searchQuery}
+                search={searchQuery}
               />
             }
           />
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/product/:id" element={<ProductPage />} />
         </Routes>
         <Footer />
       </div>
