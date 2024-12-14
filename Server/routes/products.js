@@ -20,55 +20,76 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // GET: Fetch Products
+// router.get("/", async (req, res) => {
+//   const { page = 1, limit = 20, search = "" } = req.query;
+//   const offset = (page - 1) * limit;
+
+
+//   let baseQuery = `
+//     SELECT 'aio' AS category, id, name, brand, price, qty FROM aio
+//     UNION ALL
+//     SELECT 'cabinet' AS category, id, name, brand, price, qty FROM cabinet
+//     UNION ALL
+//     SELECT 'accessories' AS category, id, name, brand, price, qty FROM accessories
+//     UNION ALL
+//     SELECT 'gpu' AS category, id, name, brand, price, qty FROM gpu
+//     UNION ALL
+//     SELECT 'motherboard' AS category, id, name, brand, price, qty FROM motherboard
+//     UNION ALL
+//     SELECT 'processors' AS category, id, name, brand, price, qty FROM processors
+//     UNION ALL
+//     SELECT 'psu' AS category, id, name, brand, price, qty FROM psu
+//     UNION ALL
+//     SELECT 'ram' AS category, id, name, brand, price, qty FROM ram
+//     UNION ALL
+//     SELECT 'ssd' AS category, id, name, brand, price, qty FROM ssd`;
+
+//   let query;
+//   let values = [];
+
+//   // Add search functionality
+//   if (search) {
+//     query = `
+//       SELECT * FROM (
+//         ${baseQuery}
+//       ) AS all_products
+//       WHERE name LIKE ? OR brand LIKE ?
+//       ORDER BY category, id
+//       LIMIT ? OFFSET ?`;
+//     values = [`%${search}%`, `%${search}%`, parseInt(limit), parseInt(offset)];
+//   } else {
+//     // Base query for pagination
+//     query = `
+//       SELECT * FROM (
+//         ${baseQuery}
+//       ) AS all_products
+//       ORDER BY category, id
+//       LIMIT ? OFFSET ?`;
+//     values = [parseInt(limit), parseInt(offset)];
+//   }
+
+//   try {
+//     // Execute query and fetch products
+//     const [rows] = await db.execute(query, values);
+//     res.status(200).json({ products: rows });
+//   } catch (err) {
+//     console.error("SQL Query Error:", err.message);
+//     res.status(500).json({ error: "Server error" });
+//   }
+// });
+
+
+
+
+// trial api
 router.get("/", async (req, res) => {
-  const { page = 1, search } = req.query;
-  const itemsPerPage = 20;
-  const offset = (page - 1) * itemsPerPage;
-
-  let query = `
-    SELECT 'aio' AS category, id, name, price, brand FROM aio
-    UNION ALL
-    SELECT 'cabinet', id, name, price, brand FROM cabinet
-    UNION ALL
-    SELECT 'gpu', id, name, price, Brand FROM gpu
-    UNION ALL
-    SELECT 'processors', id, name, price, vendor FROM processors
-    UNION ALL
-    SELECT 'psu', id, name, price, brand FROM psu
-    UNION ALL
-    SELECT 'ram', id, name, price, brand FROM ram
-    UNION ALL
-    SELECT 'ssd', id, name, price, brand FROM ssd
-    ORDER BY category, id
-    LIMIT ? OFFSET ?`;
-
-  let values = [itemsPerPage, offset];
-
-  if (search) {
-    query = `
-      SELECT * FROM (
-        SELECT 'aio' AS category, id, name, price, brand FROM aio
-        UNION ALL
-        SELECT 'cabinet', id, name, price, brand FROM cabinet
-        UNION ALL
-        SELECT 'gpu', id, name, price, Brand FROM gpu
-        UNION ALL
-        SELECT 'processors', id, name, price, vendor FROM processors
-        UNION ALL
-        SELECT 'psu', id, name, price, brand FROM psu
-        UNION ALL
-        SELECT 'ram', id, name, price, brand FROM ram
-        UNION ALL
-        SELECT 'ssd', id, name, price, brand FROM ssd
-      ) AS all_products
-      WHERE name LIKE ?
-      ORDER BY category, id
-      LIMIT ? OFFSET ?`;
-    values = [`%${search}%`, itemsPerPage, offset];
-  }
+  const query = `
+    SELECT 'aio' AS category, id, name, price, brand, qty FROM aio
+    LIMIT 10
+  `;
 
   try {
-    const [rows] = await db.execute(query, values);
+    const [rows] = await db.execute(query);
     res.json({ products: rows });
   } catch (err) {
     console.error("SQL Query Error:", err.message);
