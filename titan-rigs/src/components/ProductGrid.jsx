@@ -65,3 +65,5 @@ const ProductGrid = ({ category, search }) => {
 };
 
 export default ProductGrid;
+
+

@@ -6,7 +6,7 @@ import pauseAnimation from "/src/assets/pause.json";
 const Slider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const departments = ["Processor", "GPU", "Motherboard", "Monitor"];
+  const departments = ["Processor", "Graphic Card", "Motherboard", "RAM", "SSD", "PSU"];
   const slides = [
     {
       id: 1,
@@ -111,3 +111,5 @@ const Slider = () => {
 };
 
 export default Slider;
+
+

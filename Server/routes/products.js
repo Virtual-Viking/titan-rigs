@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const path = require("path");
-const mysql = require("mysql2/promise"); // Use promise-based MySQL
+const mysql = require("mysql2/promise"); 
 
 // Import db connection (ensure this is properly set up in your project)
 const db = require("../db"); // Adjust the path as per your project structure
@@ -140,7 +140,41 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/category/:category", async (req, res) => {
+  const { category } = req.params;
 
+  // Map user-friendly category name to database table name
+  const categoryMap = {
+    processor: "processors",
+    "graphic card": "gpu",
+    motherboard: "motherboard",
+    ram: "ram",
+    ssd: "ssd",
+    psu: "psu",
+  };
+
+  const tableName = categoryMap[category.toLowerCase()];
+  if (!tableName) {
+    return res.status(400).json({ error: "Invalid category" });
+  }
+
+  const query = `
+    SELECT p.id, p.name, p.brand, p.price, p.qty, i.image_url
+    FROM ${mysql.escapeId(tableName)} p
+    LEFT JOIN product_images i
+    ON p.id = i.product_id
+    WHERE i.product_type = ?
+    GROUP BY p.id;
+  `;
+
+  try {
+    const [rows] = await db.execute(query, [category.toLowerCase()]);
+    res.status(200).json({ products: rows });
+  } catch (err) {
+    console.error("SQL Query Error:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+});
 
 router.get("/images/:productType/:productId", async (req, res) => {
   const { productType, productId } = req.params;
@@ -186,3 +220,5 @@ router.post("/", upload.single("image"), async (req, res) => {
 });
 
 module.exports = router;
+
+
