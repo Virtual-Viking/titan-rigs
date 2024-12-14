@@ -139,6 +139,28 @@ router.get("/", async (req, res) => {
 
 
 
+router.get("/images/:productType/:productId", async (req, res) => {
+  const { productType, productId } = req.params;
+
+  const query = `
+    SELECT image_url
+    FROM product_images
+    WHERE product_type = ? AND product_id = ?
+    LIMIT 1
+  `;
+
+  try {
+    const [rows] = await db.execute(query, [productType, productId]);
+    if (rows.length > 0) {
+      res.json({ image_url: rows[0].image_url });
+    } else {
+      res.status(404).json({ error: "Image not found" });
+    }
+  } catch (err) {
+    console.error("SQL Query Error:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+});
 
 
 
