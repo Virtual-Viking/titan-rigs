@@ -88,38 +88,41 @@ router.get("/", async (req, res) => {
   const offset = (page - 1) * itemsPerPage;
 
   let query = `
+    SELECT 'processors' AS category, id, name, price, brand, qty FROM processors
+    UNION ALL
+    SELECT 'motherboard' AS category, id, name, price, brand, qty FROM motherboard
+    UNION ALL
+    SELECT 'gpu' AS category, id, name, price, brand, qty FROM gpu
+    UNION ALL
     SELECT 'aio' AS category, id, name, price, brand, qty FROM aio
     UNION ALL
-    SELECT 'cabinet', id, name, price, brand, qty FROM cabinet
+    SELECT 'cabinet' AS category, id, name, price, brand, qty FROM cabinet
     UNION ALL
-    SELECT 'gpu', id, name, price, brand, qty FROM gpu
+    SELECT 'psu' AS category, id, name, price, brand, qty FROM psu
     UNION ALL
-    SELECT 'processors', id, name, price, brand, qty FROM processors
+    SELECT 'ram' AS category, id, name, price, brand, qty FROM ram
     UNION ALL
-    SELECT 'psu', id, name, price, brand, qty FROM psu
-    UNION ALL
-    SELECT 'ram', id, name, price, brand, qty FROM ram
-    UNION ALL
-    SELECT 'ssd', id, name, price, brand, qty FROM ssd
+    SELECT 'ssd' AS category, id, name, price, brand, qty FROM ssd
     LIMIT ${itemsPerPage} OFFSET ${offset};
   `;
 
   if (search) {
     query = `
-      SELECT * FROM (
+        SELECT 'processors AS category', id, name, price, brand, qty FROM processors
+        UNION ALL
+        SELECT 'motherboard AS category', id, name, price, brand, qty FROM motherboard
+        UNION ALL
+        SELECT 'gpu' AS category, id, name, price, brand, qty FROM gpu
+        UNION ALL
         SELECT 'aio' AS category, id, name, price, brand, qty FROM aio
         UNION ALL
-        SELECT 'cabinet', id, name, price, brand, qty FROM cabinet
+        SELECT 'cabinet' AS category, id, name, price, brand, qty FROM cabinet
         UNION ALL
-        SELECT 'gpu', id, name, price, brand, qty FROM gpu
+        SELECT 'psu' AS category, id, name, price, brand, qty FROM psu
         UNION ALL
-        SELECT 'processors', id, name, price, brand, qty FROM processors
+        SELECT 'ram' AS category, id, name, price, brand, qty FROM ram
         UNION ALL
-        SELECT 'psu', id, name, price, brand, qty FROM psu
-        UNION ALL
-        SELECT 'ram', id, name, price, brand, qty FROM ram
-        UNION ALL
-        SELECT 'ssd', id, name, price, brand, qty FROM ssd
+        SELECT 'ssd' AS category, id, name, price, brand, qty FROM ssd
       ) AS all_products
       WHERE name LIKE '%${search}%'
       LIMIT ${itemsPerPage} OFFSET ${offset};
@@ -151,6 +154,7 @@ router.get("/images/:productType/:productId", async (req, res) => {
 
   try {
     const [rows] = await db.execute(query, [productType, productId]);
+    console.log("Fetched Image URL:", rows);
     if (rows.length > 0) {
       res.json({ image_url: rows[0].image_url });
     } else {
