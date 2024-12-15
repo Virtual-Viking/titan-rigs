@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const path = require("path");
+const mysql = require("mysql2/promise");
 const mysql = require("mysql2/promise"); 
 
 
@@ -24,7 +25,6 @@ const upload = multer({ storage });
 // router.get("/", async (req, res) => {
 //   const { page = 1, limit = 20, search = "" } = req.query;
 //   const offset = (page - 1) * limit;
-
 
 //   let baseQuery = `
 //     SELECT 'aio' AS category, id, name, brand, price, qty FROM aio
@@ -78,9 +78,6 @@ const upload = multer({ storage });
 //     res.status(500).json({ error: "Server error" });
 //   }
 // });
-
-
-
 
 // trial api
 router.get("/", async (req, res) => {
@@ -181,6 +178,13 @@ router.get('/product/:id', async (req, res) => {
 
     const [productResults] = await db.query(productQuery, [id]);
 
+    if (rows.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `No products found in ${categoryName}.` });
+    }
+
+    res.json({ products: rows });
     if (!productResults.length) {
       return res.status(404).json({ error: 'Product not found' });
     }
@@ -432,5 +436,3 @@ router.get("/ram/:ddrtype", (req, res) => {
 
 
 module.exports = router;
-
-

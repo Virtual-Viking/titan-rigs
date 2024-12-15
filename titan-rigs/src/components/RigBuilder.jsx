@@ -6,8 +6,11 @@ const RigBuilder = () => {
   const [processors, setProcessors] = useState([]);
   const [selectedProcessor, setSelectedProcessor] = useState(null);
   const [motherboards, setMotherboards] = useState([]);
-  const [selectedMotherboard, setSelectedMotherboard] = useState(null); // New state for selected motherboard
-  const [ram, setRam] = useState([]); // State for RAM
+  const [selectedMotherboard, setSelectedMotherboard] = useState(null);
+  const [ram, setRam] = useState([]);
+  const [selectedRam, setSelectedRam] = useState(null);
+  const [ssds, setSsds] = useState([]);
+  const [gpus, setGpus] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -57,14 +60,14 @@ const RigBuilder = () => {
     }
   };
 
-  // Fetch RAM based on DDR type
-  const fetchRamByDdrType = async (ddrtype) => {
+  // Fetch RAM based on selected motherboard's DDR type
+  const fetchRamByDdrType = async (ddrType) => {
     setLoading(true);
     setError("");
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/products/ram/${ddrtype}`
+        `http://localhost:5000/api/products/ram/${ddrType}`
       );
 
       if (!response.ok) {
@@ -80,6 +83,68 @@ const RigBuilder = () => {
     }
   };
 
+  const fetchAllSsds = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await fetch("http://localhost:5000/api/products/ssds");
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch SSDs: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      setSsds(data.ssds);
+    } catch (error) {
+      setError(`Error: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch all GPUs after selecting SSD
+  const fetchAllGpus = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await fetch("http://localhost:5000/api/products/gpus");
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch GPUs: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      setGpus(data.gpus);
+    } catch (error) {
+      setError(`Error: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle RAM selection
+  const handleRamChange = (e) => {
+    const selectedRamId = e.target.value;
+    const selectedRam = ram.find((r) => r.id === parseInt(selectedRamId));
+    setSelectedRam(selectedRam);
+    fetchAllSsds();
+  };
+
+  // Handle SSD selection
+  const handleSsdChange = (e) => {
+    const selectedSsdId = e.target.value;
+    const selectedSsd = ssds.find((s) => s.id === parseInt(selectedSsdId));
+    setSelectedRam(selectedSsd); // You can modify this based on your use case
+    fetchAllGpus(); // Fetch all GPUs after selecting SSD
+  };
+
+  // Handle processor change
+  const handleProcessorChange = (e) => {
+    const processorId = e.target.value;
+    const processor = processors.find((p) => p.id === parseInt(processorId));
+    setSelectedProcessor(processor);
+  };
+
   // Fetch processors when the selected brand changes
   useEffect(() => {
     fetchProcessorsByBrand(selectedBrand);
@@ -88,47 +153,18 @@ const RigBuilder = () => {
   // Fetch motherboards when the selected processor changes
   useEffect(() => {
     if (selectedProcessor) {
-      const chipset = selectedProcessor.chipset; // Get the chipset from the selected processor
-      fetchMotherboardsByChipset(chipset); // Fetch motherboards with the same chipset
+      const chipset = selectedProcessor.chipset;
+      fetchMotherboardsByChipset(chipset);
     }
   }, [selectedProcessor]);
 
   // Fetch RAM when a motherboard is selected
   useEffect(() => {
     if (selectedMotherboard) {
-      const ddrtype = selectedMotherboard.ddrtype; // Get DDR type from selected motherboard
-      fetchRamByDdrType(ddrtype); // Fetch RAM with the same DDR type
+      const ddrType = selectedMotherboard.ddrtype;
+      fetchRamByDdrType(ddrType);
     }
   }, [selectedMotherboard]);
-
-  // Handle brand change
-  const handleBrandChange = (e) => {
-    const selected = e.target.value;
-    setSelectedBrand(selected);
-    setSelectedProcessor(null); // Reset selected processor when brand changes
-    setMotherboards([]); // Reset motherboards list
-    setRam([]); // Reset RAM list
-    setSelectedMotherboard(null); // Reset selected motherboard
-  };
-
-  // Handle processor change
-  const handleProcessorChange = (e) => {
-    const processorId = e.target.value;
-    const processor = processors.find((p) => p.id === parseInt(processorId));
-    setSelectedProcessor(processor); // Set selected processor
-    setMotherboards([]); // Reset motherboard list
-    setRam([]); // Reset RAM list
-    setSelectedMotherboard(null); // Reset selected motherboard
-  };
-
-  // Handle motherboard change
-  const handleMotherboardChange = (e) => {
-    const motherboardId = e.target.value;
-    const motherboard = motherboards.find(
-      (m) => m.id === parseInt(motherboardId)
-    );
-    setSelectedMotherboard(motherboard); // Set selected motherboard
-  };
 
   return (
     <div className="dropdown-container">
@@ -137,7 +173,7 @@ const RigBuilder = () => {
       <div className="dropdown">
         <select
           value={selectedBrand}
-          onChange={handleBrandChange}
+          onChange={(e) => setSelectedBrand(e.target.value)}
           className="dropdown-select"
         >
           <option value="Intel">Intel</option>
@@ -158,7 +194,7 @@ const RigBuilder = () => {
           {processors.length > 0
             ? processors.map((processor) => (
                 <option key={processor.id} value={processor.id}>
-                  {processor.name}
+                  {processor.name} - {processor.price}$
                 </option>
               ))
             : !loading && <option>No processors available</option>}
@@ -172,16 +208,19 @@ const RigBuilder = () => {
           <div className="dropdown">
             <select
               value={selectedMotherboard?.id || ""}
-              onChange={handleMotherboardChange}
+              onChange={(e) => {
+                const motherboard = motherboards.find(
+                  (m) => m.id === parseInt(e.target.value)
+                );
+                setSelectedMotherboard(motherboard);
+                fetchRamByDdrType(motherboard.ddrtype);
+              }}
               className="dropdown-select"
             >
-              {loading && <option>Loading motherboards...</option>}
-              {error && <option>Error: {error}</option>}
               {motherboards.length > 0
                 ? motherboards.map((motherboard) => (
                     <option key={motherboard.id} value={motherboard.id}>
-                      {motherboard.name} - {motherboard.formfactor} -{" "}
-                      {motherboard.price}$
+                      {motherboard.name} - {motherboard.price}$
                     </option>
                   ))
                 : !loading && <option>No motherboards available</option>}
@@ -190,21 +229,67 @@ const RigBuilder = () => {
         </div>
       )}
 
-      {/* Display selected options */}
-      <div className="selected-option">
-        {selectedProcessor && (
-          <p>
-            You have selected: <strong>{selectedProcessor.name}</strong> with{" "}
-            <strong>{selectedProcessor.chipset}</strong> chipset.
-          </p>
-        )}
-        {selectedMotherboard && (
-          <p>
-            You have selected: <strong>{selectedMotherboard.name}</strong> with{" "}
-            <strong>{selectedMotherboard.ddrtype}</strong> DDR type.
-          </p>
-        )}
-      </div>
+      {/* RAM Dropdown */}
+      {selectedMotherboard && (
+        <div>
+          <label className="dropdown-label">Select RAM:</label>
+          <div className="dropdown">
+            <select
+              value={selectedRam?.id || ""}
+              onChange={handleRamChange}
+              className="dropdown-select"
+            >
+              {ram.length > 0
+                ? ram.map((ramItem) => (
+                    <option key={ramItem.id} value={ramItem.id}>
+                      {ramItem.name} - {ramItem.price}$
+                    </option>
+                  ))
+                : !loading && <option>No RAM available</option>}
+            </select>
+          </div>
+        </div>
+      )}
+
+      {/* SSD Dropdown */}
+      {selectedRam && (
+        <div>
+          <label className="dropdown-label">Select SSD:</label>
+          <div className="dropdown">
+            <select
+              value={selectedRam?.id || ""}
+              onChange={handleSsdChange}
+              className="dropdown-select"
+            >
+              {ssds.length > 0
+                ? ssds.map((ssd) => (
+                    <option key={ssd.id} value={ssd.id}>
+                      {ssd.name} - {ssd.price}$
+                    </option>
+                  ))
+                : !loading && <option>No SSDs available</option>}
+            </select>
+          </div>
+        </div>
+      )}
+
+      {/* GPU Dropdown */}
+      {selectedRam && (
+        <div>
+          <label className="dropdown-label">Select GPU:</label>
+          <div className="dropdown">
+            <select className="dropdown-select">
+              {gpus.length > 0
+                ? gpus.map((gpu) => (
+                    <option key={gpu.id} value={gpu.id}>
+                      {gpu.name} - {gpu.memory}GB - {gpu.price}$
+                    </option>
+                  ))
+                : !loading && <option>No GPUs available</option>}
+            </select>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
