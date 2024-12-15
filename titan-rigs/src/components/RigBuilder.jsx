@@ -10,6 +10,7 @@ const RigBuilder = () => {
   const [ram, setRam] = useState([]);
   const [selectedRam, setSelectedRam] = useState(null);
   const [ssds, setSsds] = useState([]);
+  const [gpus, setGpus] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -82,11 +83,9 @@ const RigBuilder = () => {
     }
   };
 
-  // Fetch all SSDs when RAM is selected (no filtering condition)
   const fetchAllSsds = async () => {
     setLoading(true);
     setError("");
-
     try {
       const response = await fetch("http://localhost:5000/api/products/ssds");
 
@@ -103,12 +102,40 @@ const RigBuilder = () => {
     }
   };
 
+  // Fetch all GPUs after selecting SSD
+  const fetchAllGpus = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await fetch("http://localhost:5000/api/products/gpus");
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch GPUs: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      setGpus(data.gpus);
+    } catch (error) {
+      setError(`Error: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Handle RAM selection
   const handleRamChange = (e) => {
     const selectedRamId = e.target.value;
     const selectedRam = ram.find((r) => r.id === parseInt(selectedRamId));
     setSelectedRam(selectedRam);
-    fetchAllSsds(); // Fetch all SSDs after selecting RAM
+    fetchAllSsds();
+  };
+
+  // Handle SSD selection
+  const handleSsdChange = (e) => {
+    const selectedSsdId = e.target.value;
+    const selectedSsd = ssds.find((s) => s.id === parseInt(selectedSsdId));
+    setSelectedRam(selectedSsd); // You can modify this based on your use case
+    fetchAllGpus(); // Fetch all GPUs after selecting SSD
   };
 
   // Handle processor change
@@ -186,7 +213,7 @@ const RigBuilder = () => {
                   (m) => m.id === parseInt(e.target.value)
                 );
                 setSelectedMotherboard(motherboard);
-                fetchRamByDdrType(motherboard.ddrtype); // Fetch RAM based on motherboard's DDR type
+                fetchRamByDdrType(motherboard.ddrtype);
               }}
               className="dropdown-select"
             >
@@ -229,7 +256,11 @@ const RigBuilder = () => {
         <div>
           <label className="dropdown-label">Select SSD:</label>
           <div className="dropdown">
-            <select className="dropdown-select">
+            <select
+              value={selectedRam?.id || ""}
+              onChange={handleSsdChange}
+              className="dropdown-select"
+            >
               {ssds.length > 0
                 ? ssds.map((ssd) => (
                     <option key={ssd.id} value={ssd.id}>
@@ -237,6 +268,24 @@ const RigBuilder = () => {
                     </option>
                   ))
                 : !loading && <option>No SSDs available</option>}
+            </select>
+          </div>
+        </div>
+      )}
+
+      {/* GPU Dropdown */}
+      {selectedRam && (
+        <div>
+          <label className="dropdown-label">Select GPU:</label>
+          <div className="dropdown">
+            <select className="dropdown-select">
+              {gpus.length > 0
+                ? gpus.map((gpu) => (
+                    <option key={gpu.id} value={gpu.id}>
+                      {gpu.name} - {gpu.memory}GB - {gpu.price}$
+                    </option>
+                  ))
+                : !loading && <option>No GPUs available</option>}
             </select>
           </div>
         </div>

@@ -337,4 +337,30 @@ router.get("/ssds", async (req, res) => {
   }
 });
 
+router.get("/gpus", async (req, res) => {
+  try {
+    // Query to fetch all GPUs
+    const query = `
+      SELECT * 
+      FROM gpu
+      ORDER BY name;
+    `;
+
+    // Execute the query and get the result rows
+    const [rows] = await db.execute(query);
+
+    // If no GPUs found, return a 404 response
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "No GPUs found" });
+    }
+
+    // Return the GPU data in the response
+    res.json({ gpus: rows });
+  } catch (err) {
+    // Log the error and send a 500 response if an exception occurs
+    console.error("Error fetching GPUs:", err.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 module.exports = router;
