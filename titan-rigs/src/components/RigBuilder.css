@@ -1,0 +1,79 @@
+.rigbuilder {
+  max-width: 1280px;
+}
+/* General container for the dropdown */
+.dropdown-container {
+  font-family: "Arial", sans-serif;
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* Label styling */
+.dropdown-label {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #333;
+  display: block;
+}
+
+/* Styling for the dropdown select box */
+.dropdown {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.dropdown-select {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  background-color: white;
+  color: #333;
+  appearance: none; /* Hide default dropdown arrow */
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.dropdown-select:hover {
+  border-color: #007bff; /* Highlight border on hover */
+}
+
+.dropdown-select:focus {
+  border-color: #0056b3; /* Focused state with blue border */
+}
+
+/* Custom dropdown arrow */
+.dropdown-arrow {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #333;
+  pointer-events: none;
+}
+
+/* Styling for the selected option text */
+.selected-option {
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* Make the selected option text look more prominent */
+.selected-option strong {
+  font-weight: bold;
+  color: #007bff;
+}

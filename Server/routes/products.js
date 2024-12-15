@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const path = require("path");
-const mysql = require("mysql2/promise"); 
+const mysql = require("mysql2/promise");
 
 // Import db connection (ensure this is properly set up in your project)
 const db = require("../db"); // Adjust the path as per your project structure
@@ -23,7 +23,6 @@ const upload = multer({ storage });
 // router.get("/", async (req, res) => {
 //   const { page = 1, limit = 20, search = "" } = req.query;
 //   const offset = (page - 1) * limit;
-
 
 //   let baseQuery = `
 //     SELECT 'aio' AS category, id, name, brand, price, qty FROM aio
@@ -77,9 +76,6 @@ const upload = multer({ storage });
 //     res.status(500).json({ error: "Server error" });
 //   }
 // });
-
-
-
 
 // trial api
 router.get("/", async (req, res) => {
@@ -148,7 +144,9 @@ router.get("/category/:categoryName", async (req, res) => {
     const [rows] = await db.execute(query);
 
     if (rows.length === 0) {
-      return res.status(404).json({ message: `No products found in ${categoryName}.` });
+      return res
+        .status(404)
+        .json({ message: `No products found in ${categoryName}.` });
     }
 
     res.json({ products: rows });
@@ -157,8 +155,6 @@ router.get("/category/:categoryName", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
-
 
 // get image api for productgrid.jsx
 router.get("/images/:productType/:productId", async (req, res) => {
@@ -209,7 +205,6 @@ router.get("/category/images/:categoryName/:productId", async (req, res) => {
   }
 });
 
-
 // POST: Add New Product
 router.post("/", upload.single("image"), async (req, res) => {
   const { name, price, category } = req.body;
@@ -227,6 +222,92 @@ router.post("/", upload.single("image"), async (req, res) => {
   }
 });
 
+// GET: Fetch processors by brand
+router.get("/processors/:brand", async (req, res) => {
+  const { brand } = req.params;
+
+  console.log(`Request received for brand: ${brand}`);
+
+  if (!["intel", "amd"].includes(brand.toLowerCase())) {
+    return res.status(400).json({ error: "Invalid brand specified" });
+  }
+
+  try {
+    const query = `
+      SELECT * 
+      FROM processors
+      WHERE brand = ?
+      ORDER BY name;
+    `;
+
+    const [rows] = await db.execute(query, [brand]);
+
+    if (rows.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `No processors found for ${brand}` });
+    }
+
+    console.log("Found processors:", rows); // Log the found processors
+
+    res.json({ processors: rows });
+  } catch (err) {
+    console.error("Error fetching processors by brand:", err.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// GET: Fetch motherboard by chipset
+router.get("/motherboards/:chipset", async (req, res) => {
+  const { chipset } = req.params;
+
+  console.log(`Request received for chipset: ${chipset}`);
+
+  try {
+    const query = `
+      SELECT * 
+      FROM motherboard
+      WHERE chipset = ?
+      ORDER BY name;
+    `;
+
+    const [rows] = await db.execute(query, [chipset]);
+
+    if (rows.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `No motherboards found for chipset: ${chipset}` });
+    }
+
+    res.json({ motherboards: rows });
+  } catch (err) {
+    console.error("Error fetching motherboards by chipset:", err.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// GET: RAM based on DDR type
+router.get("/ram/:ddrtype", (req, res) => {
+  const { ddrtype } = req.params;
+
+  const query = "SELECT * FROM ram WHERE ddrtype = ?";
+
+  db.query(query, [ddrtype], (err, results) => {
+    if (err) {
+      console.error("Error querying database:", err);
+      return res
+        .status(500)
+        .json({ message: "Server error while fetching RAM" });
+    }
+
+    if (results.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `No RAM modules found for DDR type: ${ddrtype}` });
+    }
+
+    // Return the RAM modules found
+    res.json({ ram: results });
+  });
+});
 module.exports = router;
-
-
