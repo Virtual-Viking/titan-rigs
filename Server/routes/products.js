@@ -384,4 +384,34 @@ router.get("/aios", async (req, res) => {
   }
 });
 
+router.get("/psu/:maxtdp", async (req, res) => {
+  const { maxtdp } = req.params; // Extract `maxtdp` from URL parameters
+
+  console.log(`Request received for PSU with minimum wattage: ${maxtdp * 3}`);
+
+  try {
+    const minWatt = maxtdp * 3; // Calculate PSU wattage threshold (maxtdp * 3)
+
+    const query = `
+      SELECT * 
+      FROM psu
+      WHERE watt > ?
+      ORDER BY watt;
+    `;
+
+    const [rows] = await db.execute(query, [minWatt]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        message: `No PSUs found with wattage greater than ${minWatt}`,
+      });
+    }
+
+    res.json({ psus: rows });
+  } catch (err) {
+    console.error("Error fetching PSUs:", err.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 module.exports = router;
