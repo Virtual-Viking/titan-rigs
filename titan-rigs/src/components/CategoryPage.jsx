@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "./CategoryPage.css";
 
 const CategoryPage = () => {
   const { categoryName } = useParams();
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -52,7 +53,11 @@ const CategoryPage = () => {
       <div className="product-grid">
         {products.length > 0 ? (
           products.map((product) => (
-            <div key={product.id} className="product-card">
+            <div
+              key={product.id}
+              className="product-card"
+              onClick={() => navigate(`/product/${product.id}`)}
+            >
               <img src={product.image_url} alt={product.name} className="product-image" />
               <div className="product-info">
                 <h3>{product.name}</h3>

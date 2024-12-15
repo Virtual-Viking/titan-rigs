@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./searchbar.css";
+import { Link } from "react-router-dom";
 import cartIcon from "/src/assets/shopping-cart.svg"; // Cart icon
 import logo from "/src/assets/logo.svg"; // Replace with your logo path
 import Lottie from "lottie-react"; // Import Lottie for animation
@@ -15,7 +16,9 @@ const Searchbar = () => {
     <div className="searchbar-container">
       {/* Logo */}
       <div className="searchbar-logo">
+      <Link to="/">
         <img src={logo} alt="Logo" className="logo" />
+        </Link>
       </div>
 
       {/* Search Bar */}

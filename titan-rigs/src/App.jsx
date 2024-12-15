@@ -7,6 +7,8 @@ import Footer from "./components/Footer";
 import ProductGrid from "./components/ProductGrid";
 import ProductPage from "./components/ProductPage";
 import CategoryPage from "./components/CategoryPage";
+import RigBuilder from "./components/RigBuilder";
+
 const App = () => {
   const [category, setCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -30,10 +32,7 @@ const App = () => {
           <Route
             path="/"
             element={
-              <ProductGrid
-                category={category}
-                searchQuery={searchQuery}
-              />
+              <ProductGrid category={category} searchQuery={searchQuery} />
             }
           />
 
@@ -42,6 +41,7 @@ const App = () => {
 
           {/* Route for specific category */}
           <Route path="/category/:categoryName" element={<CategoryPage />} />
+          <Route path="/rig-builder" element={<RigBuilder />} />
         </Routes>
         <Footer />
       </div>
@@ -50,4 +50,3 @@ const App = () => {
 };
 
 export default App;
-

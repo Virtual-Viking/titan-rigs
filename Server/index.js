@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const mysql = require('mysql2');
+const productRoutes = require('./routes/products');
 
 // Import routes
 const productsRoute = require("./routes/products"); // Correctly importing the route
@@ -12,7 +13,7 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
-
+app.use('/api/product', productRoutes);
 // Register the routes
 app.use("/api/products", productsRoute); // Ensure this is the only route registration for products
 app.use("/uploads", express.static("uploads"));

@@ -1,78 +1,78 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import "./ProductPage.css";
-import heartIcon from "../assets/heart.svg";
+import "./ProductPage.css"; // Import the CSS file for styling
 
 const ProductPage = () => {
-  const { id } = useParams();
+  const { name, category } = useParams(); // Get the name and category from the URL params
   const [product, setProduct] = useState(null);
-  const [images, setImages] = useState([]);
-  const [qty, setQty] = useState(1);
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchProductDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/products/${id}`);
+        setLoading(true);
+
+        // Call the API to fetch product details
+        const response = await fetch(
+          `http://localhost:5000/api/product/search?name=${encodeURIComponent(
+            name
+          )}&category=${encodeURIComponent(category)}`
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch product details");
+        }
+
         const data = await response.json();
-        setProduct(data.product);
-        setImages(data.images);
-      } catch (error) {
-        console.error("Error fetching product details:", error);
+        setProduct(data);
+        setError(null); // Clear any previous errors
+      } catch (err) {
+        console.error("Error fetching product details:", err);
+        setError("Failed to load product details.");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchProductDetails();
-  }, [id]);
+  }, [name, category]);
 
-  const toggleWishlist = () => {
-    setIsWishlisted((prev) => !prev);
-  };
+  if (loading) {
+    return <div className="product-page-loading">Loading product details...</div>;
+  }
 
-  const handleQtyChange = (change) => {
-    setQty((prev) => Math.max(1, prev + change));
-  };
-
-  if (!product) return <p>Loading product details...</p>;
+  if (error) {
+    return <div className="product-page-error">{error}</div>;
+  }
 
   return (
     <div className="product-page">
-      <div className="product-images">
-        <img
-          src={images[0] || "default-image-placeholder.png"}
-          alt={product.name}
-          className="main-image"
-        />
-        <div className="image-thumbnails">
-          {images.map((img, index) => (
-            <img key={index} src={img} alt={`Thumbnail ${index}`} />
-          ))}
+      <div className="product-details-container">
+        <h1 className="product-title">{product.product.name}</h1>
+        <div className="product-details">
+          <div className="product-image-container">
+            <img
+              src={product.image}
+              alt={product.product.name}
+              className="product-main-image"
+            />
+          </div>
+          <div className="product-info-container">
+            <p><strong>Brand:</strong> {product.product.brand}</p>
+            <p><strong>Model:</strong> {product.product.model}</p>
+            <p><strong>Chipset:</strong> {product.product.chipset}</p>
+            <p><strong>Socket:</strong> {product.product.socket}</p>
+            <p><strong>Max TDP:</strong> {product.product.maxtdp}W</p>
+            <p><strong>Price:</strong> ${product.product.price}</p>
+            <p><strong>Release Date:</strong> {new Date(product.product.release_date).toLocaleDateString()}</p>
+            <p><strong>Offers:</strong> {product.product.offers}</p>
+            <p><strong>Stock:</strong> {product.product.qty}</p>
+          </div>
         </div>
-      </div>
-      <div className="product-details">
-        <p className="product-category">{product.category}</p>
-        <h1 className="product-title">{product.name}</h1>
-        <hr />
-        <div className="wishlist">
-          <img
-            src={heartIcon}
-            alt="Add to wishlist"
-            className={`wishlist-icon ${isWishlisted ? "active" : ""}`}
-            onClick={toggleWishlist}
-          />
-        </div>
-        <div className="product-qty">
-          <button onClick={() => handleQtyChange(-1)}>-</button>
-          <span>{qty}</span>
-          <button onClick={() => handleQtyChange(1)}>+</button>
-          <button className="add-to-cart">Add to Cart</button>
-        </div>
-        <p className="product-price">${product.price}</p>
       </div>
     </div>
   );
 };
 
 export default ProductPage;
-
-

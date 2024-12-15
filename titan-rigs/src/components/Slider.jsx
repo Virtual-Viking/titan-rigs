@@ -66,6 +66,9 @@ const Slider = ({ onCategoryChange }) => {
     navigate(`/category/${category}`);
   };
 
+  const handleRig = () => {
+    navigate("/rig-builder");
+  };
   return (
     <div className="slider-wrapper">
       {/* Background Color */}
@@ -76,10 +79,14 @@ const Slider = ({ onCategoryChange }) => {
 
       {/* Departments List code startt not in navbar.jsx, here here, only here */}
       <div className="departments-container">
-        <h3 className="departments-header">Departments</h3>
+        <h3 className="departments-header" onClick={() => handleRig()}>
+          RIG-BUILDER
+        </h3>
         <ul className="department-list">
           <li onClick={() => handleCategoryClick("processors")}>Processors</li>
-          <li onClick={() => handleCategoryClick("motherboard")}>Motherboards</li>
+          <li onClick={() => handleCategoryClick("motherboard")}>
+            Motherboards
+          </li>
           <li onClick={() => handleCategoryClick("gpu")}>GPUs</li>
           <li onClick={() => handleCategoryClick("ram")}>RAM</li>
           <li onClick={() => handleCategoryClick("psu")}>PSUs</li>
