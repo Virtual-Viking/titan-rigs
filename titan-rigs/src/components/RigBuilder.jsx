@@ -11,6 +11,7 @@ const RigBuilder = () => {
   const [selectedRam, setSelectedRam] = useState(null);
   const [ssds, setSsds] = useState([]);
   const [gpus, setGpus] = useState([]);
+  const [aios, setAios] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -122,6 +123,25 @@ const RigBuilder = () => {
     }
   };
 
+  // Fetch all AIOs after selecting SSD
+  const fetchAllAios = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await fetch("http://localhost:5000/api/products/aios");
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch Aios: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      setAios(data.aios);
+    } catch (error) {
+      setError(`Error: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
   // Handle RAM selection
   const handleRamChange = (e) => {
     const selectedRamId = e.target.value;
@@ -136,6 +156,14 @@ const RigBuilder = () => {
     const selectedSsd = ssds.find((s) => s.id === parseInt(selectedSsdId));
     setSelectedRam(selectedSsd); // You can modify this based on your use case
     fetchAllGpus(); // Fetch all GPUs after selecting SSD
+  };
+
+  // Handle GPU selection
+  const handleGpuChange = (e) => {
+    const selectedGpuId = e.target.value;
+    const selectedGpu = gpus.find((gpu) => gpu.id === parseInt(selectedGpuId));
+    setSelectedRam(selectedGpu); // You can modify this based on your use case
+    fetchAllAios(); // Fetch all AIOs after selecting GPU
   };
 
   // Handle processor change
@@ -278,7 +306,11 @@ const RigBuilder = () => {
         <div>
           <label className="dropdown-label">Select GPU:</label>
           <div className="dropdown">
-            <select className="dropdown-select">
+            <select
+              value={selectedRam?.id || ""}
+              onChange={handleGpuChange}
+              className="dropdown-select"
+            >
               {gpus.length > 0
                 ? gpus.map((gpu) => (
                     <option key={gpu.id} value={gpu.id}>
@@ -286,6 +318,24 @@ const RigBuilder = () => {
                     </option>
                   ))
                 : !loading && <option>No GPUs available</option>}
+            </select>
+          </div>
+        </div>
+      )}
+
+      {/* AIOs Dropdown */}
+      {selectedRam && (
+        <div>
+          <label className="dropdown-label">Select AIO:</label>
+          <div className="dropdown">
+            <select className="dropdown-select">
+              {aios.length > 0
+                ? aios.map((aio) => (
+                    <option key={aio.id} value={aio.id}>
+                      {aio.name} - {aio.memory}GB - {aio.price}$
+                    </option>
+                  ))
+                : !loading && <option>No AIOs available</option>}
             </select>
           </div>
         </div>
