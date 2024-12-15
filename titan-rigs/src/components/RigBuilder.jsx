@@ -6,8 +6,8 @@ const RigBuilder = () => {
   const [processors, setProcessors] = useState([]);
   const [selectedProcessor, setSelectedProcessor] = useState(null);
   const [motherboards, setMotherboards] = useState([]);
-  const [selectedMotherboard, setSelectedMotherboard] = useState(null); // New state for selected motherboard
-  const [ram, setRam] = useState([]); // State for RAM
+  const [selectedMotherboard, setSelectedMotherboard] = useState(null);
+  const [ram, setRam] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -57,10 +57,11 @@ const RigBuilder = () => {
     }
   };
 
-  // Fetch RAM based on DDR type
+  // Fetch RAM based on DDR type from the selected motherboard
   const fetchRamByDdrType = async (ddrtype) => {
     setLoading(true);
     setError("");
+    console.log("Fetching RAM for DDR type:", ddrtype); // Debugging log
 
     try {
       const response = await fetch(
@@ -72,8 +73,10 @@ const RigBuilder = () => {
       }
 
       const data = await response.json();
+      console.log("RAM data:", data); // Debugging log
       setRam(data.ram);
     } catch (error) {
+      console.error("Error fetching RAM:", error); // Debugging log
       setError(`Error: ${error.message}`);
     } finally {
       setLoading(false);
@@ -88,16 +91,16 @@ const RigBuilder = () => {
   // Fetch motherboards when the selected processor changes
   useEffect(() => {
     if (selectedProcessor) {
-      const chipset = selectedProcessor.chipset; // Get the chipset from the selected processor
-      fetchMotherboardsByChipset(chipset); // Fetch motherboards with the same chipset
+      const chipset = selectedProcessor.chipset;
+      fetchMotherboardsByChipset(chipset);
     }
   }, [selectedProcessor]);
 
-  // Fetch RAM when a motherboard is selected
+  // Fetch RAM when the selected motherboard changes
   useEffect(() => {
     if (selectedMotherboard) {
-      const ddrtype = selectedMotherboard.ddrtype; // Get DDR type from selected motherboard
-      fetchRamByDdrType(ddrtype); // Fetch RAM with the same DDR type
+      const ddrtype = selectedMotherboard.ddrtype;
+      fetchRamByDdrType(ddrtype);
     }
   }, [selectedMotherboard]);
 
@@ -116,9 +119,6 @@ const RigBuilder = () => {
     const processorId = e.target.value;
     const processor = processors.find((p) => p.id === parseInt(processorId));
     setSelectedProcessor(processor); // Set selected processor
-    setMotherboards([]); // Reset motherboard list
-    setRam([]); // Reset RAM list
-    setSelectedMotherboard(null); // Reset selected motherboard
   };
 
   // Handle motherboard change
@@ -185,6 +185,26 @@ const RigBuilder = () => {
                     </option>
                   ))
                 : !loading && <option>No motherboards available</option>}
+            </select>
+          </div>
+        </div>
+      )}
+
+      {/* RAM Dropdown */}
+      {selectedMotherboard && (
+        <div>
+          <label className="dropdown-label">Select RAM:</label>
+          <div className="dropdown">
+            <select className="dropdown-select">
+              {loading && <option>Loading RAM...</option>}
+              {error && <option>Error: {error}</option>}
+              {ram.length > 0
+                ? ram.map((ramItem) => (
+                    <option key={ramItem.id} value={ramItem.id}>
+                      {ramItem.name} - {ramItem.capacity}GB - {ramItem.price}$
+                    </option>
+                  ))
+                : !loading && <option>No RAM available</option>}
             </select>
           </div>
         </div>

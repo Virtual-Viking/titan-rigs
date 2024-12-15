@@ -287,27 +287,32 @@ router.get("/motherboards/:chipset", async (req, res) => {
 });
 
 // GET: RAM based on DDR type
-router.get("/ram/:ddrtype", (req, res) => {
+router.get("/ram/:ddrtype", async (req, res) => {
   const { ddrtype } = req.params;
 
-  const query = "SELECT * FROM ram WHERE ddrtype = ?";
+  console.log(`Request received for DDR type: ${ddrtype}`);
 
-  db.query(query, [ddrtype], (err, results) => {
-    if (err) {
-      console.error("Error querying database:", err);
-      return res
-        .status(500)
-        .json({ message: "Server error while fetching RAM" });
-    }
+  try {
+    const query = `
+      SELECT * 
+      FROM ram
+      WHERE ddrtype = ?
+      ORDER BY name;
+    `;
 
-    if (results.length === 0) {
+    const [rows] = await db.execute(query, [ddrtype]);
+
+    if (rows.length === 0) {
       return res
         .status(404)
-        .json({ message: `No RAM modules found for DDR type: ${ddrtype}` });
+        .json({ message: `No RAM found for DDR type: ${ddrtype}` });
     }
 
-    // Return the RAM modules found
-    res.json({ ram: results });
-  });
+    res.json({ ram: rows });
+  } catch (err) {
+    console.error("Error fetching RAM by DDR type:", err.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
+
 module.exports = router;
