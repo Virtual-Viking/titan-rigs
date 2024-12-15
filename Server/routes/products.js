@@ -140,42 +140,27 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/category/:category", async (req, res) => {
-  const { category } = req.params;
-
-  // Map user-friendly category name to database table name
-  const categoryMap = {
-    processor: "processors",
-    "graphic card": "gpu",
-    motherboard: "motherboard",
-    ram: "ram",
-    ssd: "ssd",
-    psu: "psu",
-  };
-
-  const tableName = categoryMap[category.toLowerCase()];
-  if (!tableName) {
-    return res.status(400).json({ error: "Invalid category" });
-  }
-
-  const query = `
-    SELECT p.id, p.name, p.brand, p.price, p.qty, i.image_url
-    FROM ${mysql.escapeId(tableName)} p
-    LEFT JOIN product_images i
-    ON p.id = i.product_id
-    WHERE i.product_type = ?
-    GROUP BY p.id;
-  `;
+router.get("/category/:categoryName", async (req, res) => {
+  const { categoryName } = req.params;
 
   try {
-    const [rows] = await db.execute(query, [category.toLowerCase()]);
-    res.status(200).json({ products: rows });
-  } catch (err) {
-    console.error("SQL Query Error:", err.message);
-    res.status(500).json({ error: "Server error" });
+    const query = `SELECT * FROM ${mysql.escapeId(categoryName)}`;
+    const [rows] = await db.execute(query);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: `No products found in ${categoryName}.` });
+    }
+
+    res.json({ products: rows });
+  } catch (error) {
+    console.error("Error fetching category products:", error.message);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
+
+
+// get image api for productgrid.jsx
 router.get("/images/:productType/:productId", async (req, res) => {
   const { productType, productId } = req.params;
 
@@ -188,7 +173,7 @@ router.get("/images/:productType/:productId", async (req, res) => {
 
   try {
     const [rows] = await db.execute(query, [productType, productId]);
-    // console.log("Fetched Image URL:", rows);
+    console.log("Image Query Result:", rows); // Debugging
     if (rows.length > 0) {
       res.json({ image_url: rows[0].image_url });
     } else {
@@ -200,6 +185,29 @@ router.get("/images/:productType/:productId", async (req, res) => {
   }
 });
 
+// separate Fetch images api for category page and product page since union table will alter product id and image will not load.
+router.get("/category/images/:categoryName/:productId", async (req, res) => {
+  const { categoryName, productId } = req.params;
+
+  const query = `
+    SELECT image_url
+    FROM product_images
+    WHERE product_type = ? AND product_id = ?
+    LIMIT 1
+  `;
+
+  try {
+    const [rows] = await db.execute(query, [categoryName, productId]);
+    if (rows.length > 0) {
+      res.json({ image_url: rows[0].image_url });
+    } else {
+      res.status(404).json({ error: "Image not found" });
+    }
+  } catch (err) {
+    console.error("Error fetching category images:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+});
 
 
 // POST: Add New Product

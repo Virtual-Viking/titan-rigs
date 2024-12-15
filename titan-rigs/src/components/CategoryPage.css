@@ -1,4 +1,6 @@
 .category-page {
+  max-width: 1280px;
+    margin: 0 auto;
     padding: 20px;
   }
   
@@ -10,7 +12,7 @@
   
   .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 20px;
   }
   
@@ -18,7 +20,7 @@
     border: 1px solid #ddd;
     padding: 10px;
     border-radius: 8px;
-    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1); */
     text-align: center;
   }
   

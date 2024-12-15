@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
 import "./Slider.css";
 import Lottie from "lottie-react";
+import { useNavigate } from "react-router-dom";
+
 import pauseAnimation from "/src/assets/pause.json";
 
-const Slider = () => {
+const Slider = ({ onCategoryChange }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const departments = ["Processor", "Graphic Card", "Motherboard", "RAM", "SSD", "PSU"];
+  const navigate = useNavigate();
+
   const slides = [
     {
       id: 1,
@@ -20,7 +23,7 @@ const Slider = () => {
       id: 2,
       image: "/src/assets/slider/2.jpg",
       bgColor: "#000",
-      text: "With a purchase of 1500$ or above get AC Mirage Steam key free!!",
+      text: "With a purchase of $1500 or above, get an AC Mirage Steam key free!!",
       textColor: "#fff",
       link: "/product/2",
     },
@@ -28,17 +31,17 @@ const Slider = () => {
       id: 3,
       image: "/src/assets/slider/3.jpg",
       bgColor: "#000",
-      // text: "Get the Latest Gaming Consoles Today!",
+      text: "Get the Latest Gaming Consoles Today!",
       textColor: "#fff",
       link: "/product/3",
     },
     {
-      id: 3,
+      id: 4,
       image: "/src/assets/slider/4.jpg",
       bgColor: "#003f5c",
-      // text: "Get the Latest Gaming Consoles Today!",
+      text: "Experience Immersive Gaming!",
       textColor: "#fff",
-      link: "/product/3",
+      link: "/product/4",
     },
   ];
 
@@ -55,7 +58,13 @@ const Slider = () => {
   const handlePauseClick = () => {
     setIsPaused((prev) => !prev);
   };
-  
+
+  const handleCategoryClick = (category) => {
+    if (onCategoryChange) {
+      onCategoryChange(category);
+    }
+    navigate(`/category/${category}`);
+  };
 
   return (
     <div className="slider-wrapper">
@@ -65,23 +74,22 @@ const Slider = () => {
         style={{ backgroundColor: slides[currentSlide].bgColor }}
       ></div>
 
-      {/* Departments List */}
+      {/* Departments List code startt not in navbar.jsx, here here, only here */}
       <div className="departments-container">
-        <div className="departments-header">Departments</div>
-        <div className="department-list">
-        {departments.map((department) => (
-          <button
-            key={department}
-            className="department-button"
-            onClick={() => onCategoryChange(department.toLowerCase())}
-          >
-            {department}
-          </button>
-        ))}
-      </div>
+        <h3 className="departments-header">Departments</h3>
+        <ul className="department-list">
+          <li onClick={() => handleCategoryClick("processors")}>Processors</li>
+          <li onClick={() => handleCategoryClick("motherboard")}>Motherboards</li>
+          <li onClick={() => handleCategoryClick("gpu")}>GPUs</li>
+          <li onClick={() => handleCategoryClick("ram")}>RAM</li>
+          <li onClick={() => handleCategoryClick("psu")}>PSUs</li>
+          <li onClick={() => handleCategoryClick("aio")}>AIOs</li>
+          <li onClick={() => handleCategoryClick("cabinet")}>Cabinets</li>
+          <li onClick={() => handleCategoryClick("ssd")}>SSDs</li>
+        </ul>
       </div>
 
-      {/* Image Slider */}
+      {/* tarun please place slider code here, without messing the structure, dont use chatgpt use brain.exe  */}
       <div className="slider">
         <a href={slides[currentSlide].link}>
           <img
@@ -111,5 +119,3 @@ const Slider = () => {
 };
 
 export default Slider;
-
-

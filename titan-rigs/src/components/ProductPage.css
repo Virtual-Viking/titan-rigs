@@ -27,7 +27,7 @@
     height: 60px;
     object-fit: contain;
     cursor: pointer;
-    border: 1px solid #ddd;
+    /* border: 1px solid #ddd; */
   }
   
   .product-details {
@@ -46,7 +46,7 @@
   }
   
   .divider {
-    border: 1px solid #ddd;
+    /* border: 1px solid #ddd; */
     margin: 10px 0;
   }
   
