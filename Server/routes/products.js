@@ -315,4 +315,26 @@ router.get("/ram/:ddrtype", async (req, res) => {
   }
 });
 
+// GET: Fetch all SSDs
+router.get("/ssds", async (req, res) => {
+  try {
+    const query = `
+      SELECT * 
+      FROM ssd
+      ORDER BY name;
+    `;
+
+    const [rows] = await db.execute(query);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "No SSDs found" });
+    }
+
+    res.json({ ssds: rows });
+  } catch (err) {
+    console.error("Error fetching SSDs:", err.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 module.exports = router;
