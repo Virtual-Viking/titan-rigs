@@ -126,12 +126,12 @@ router.get("/", async (req, res) => {
   }
 
   try {
-    console.log("SQL Query:", query);
+    // console.log("SQL Query:", query);
 
     const [rows] = await db.execute(query);
     res.json({ products: rows });
   } catch (err) {
-    console.error("SQL Query Error:", err.message);
+    // console.error("SQL Query Error:", err.message);
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -151,7 +151,7 @@ router.get("/category/:categoryName", async (req, res) => {
 
     res.json({ products: rows });
   } catch (error) {
-    console.error("Error fetching category products:", error.message);
+    // console.error("Error fetching category products:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -169,14 +169,14 @@ router.get("/images/:productType/:productId", async (req, res) => {
 
   try {
     const [rows] = await db.execute(query, [productType, productId]);
-    console.log("Image Query Result:", rows); // Debugging
+    // console.log("Image Query Result:", rows); // Debugging
     if (rows.length > 0) {
       res.json({ image_url: rows[0].image_url });
     } else {
       res.status(404).json({ error: "Image not found" });
     }
   } catch (err) {
-    console.error("SQL Query Error:", err.message);
+    // console.error("SQL Query Error:", err.message);
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -200,7 +200,7 @@ router.get("/category/images/:categoryName/:productId", async (req, res) => {
       res.status(404).json({ error: "Image not found" });
     }
   } catch (err) {
-    console.error("Error fetching category images:", err.message);
+    // console.error("Error fetching category images:", err.message);
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -217,7 +217,7 @@ router.post("/", upload.single("image"), async (req, res) => {
     await db.execute(query, [name, price, image]);
     res.status(201).json({ message: "Product added successfully!" });
   } catch (err) {
-    console.error(err);
+    // console.error(err);
     res.status(500).json({ error: "Failed to add product" });
   }
 });
@@ -226,7 +226,7 @@ router.post("/", upload.single("image"), async (req, res) => {
 router.get("/processors/:brand", async (req, res) => {
   const { brand } = req.params;
 
-  console.log(`Request received for brand: ${brand}`);
+  // console.log(`Request received for brand: ${brand}`);
 
   if (!["intel", "amd"].includes(brand.toLowerCase())) {
     return res.status(400).json({ error: "Invalid brand specified" });
@@ -248,7 +248,7 @@ router.get("/processors/:brand", async (req, res) => {
         .json({ message: `No processors found for ${brand}` });
     }
 
-    console.log("Found processors:", rows); // Log the found processors
+    // console.log("Found processors:", rows); // Log the found processors
 
     res.json({ processors: rows });
   } catch (err) {
@@ -261,7 +261,7 @@ router.get("/processors/:brand", async (req, res) => {
 router.get("/motherboards/:chipset", async (req, res) => {
   const { chipset } = req.params;
 
-  console.log(`Request received for chipset: ${chipset}`);
+  // console.log(`Request received for chipset: ${chipset}`);
 
   try {
     const query = `
@@ -281,7 +281,7 @@ router.get("/motherboards/:chipset", async (req, res) => {
 
     res.json({ motherboards: rows });
   } catch (err) {
-    console.error("Error fetching motherboards by chipset:", err.message);
+    // console.error("Error fetching motherboards by chipset:", err.message);
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -290,7 +290,7 @@ router.get("/motherboards/:chipset", async (req, res) => {
 router.get("/ram/:ddrtype", async (req, res) => {
   const { ddrtype } = req.params;
 
-  console.log(`Request received for DDR type: ${ddrtype}`);
+  // console.log(`Request received for DDR type: ${ddrtype}`);
 
   try {
     const query = `
@@ -310,7 +310,7 @@ router.get("/ram/:ddrtype", async (req, res) => {
 
     res.json({ ram: rows });
   } catch (err) {
-    console.error("Error fetching RAM by DDR type:", err.message);
+    // console.error("Error fetching RAM by DDR type:", err.message);
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -332,7 +332,7 @@ router.get("/ssds", async (req, res) => {
 
     res.json({ ssds: rows });
   } catch (err) {
-    console.error("Error fetching SSDs:", err.message);
+    // console.error("Error fetching SSDs:", err.message);
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -354,7 +354,7 @@ router.get("/gpus", async (req, res) => {
 
     res.json({ gpus: rows });
   } catch (err) {
-    console.error("Error fetching GPUs:", err.message);
+    // console.error("Error fetching GPUs:", err.message);
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -379,7 +379,7 @@ router.get("/aios", async (req, res) => {
     res.json({ aios: rows });
   } catch (err) {
     // Log the error and send a 500 response if an exception occurs
-    console.error("Error fetching AIO coolers:", err.message);
+    // console.error("Error fetching AIO coolers:", err.message);
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -387,7 +387,7 @@ router.get("/aios", async (req, res) => {
 router.get("/psu/:maxtdp", async (req, res) => {
   const { maxtdp } = req.params; // Extract `maxtdp` from URL parameters
 
-  console.log(`Request received for PSU with minimum wattage: ${maxtdp * 3}`);
+  // console.log(`Request received for PSU with minimum wattage: ${maxtdp * 3}`);
 
   try {
     const minWatt = maxtdp * 3; // Calculate PSU wattage threshold (maxtdp * 3)
@@ -409,7 +409,42 @@ router.get("/psu/:maxtdp", async (req, res) => {
 
     res.json({ psus: rows });
   } catch (err) {
-    console.error("Error fetching PSUs:", err.message);
+    // console.error("Error fetching PSUs:", err.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// GET: Fetch all cabinets compatible with selected AIO
+router.get("/cabinets/:aioLen", async (req, res) => {
+  const { aioLen } = req.params;
+
+  try {
+    // Convert AIO length to numeric value by removing "mm" and converting to number
+    const aioLenNumeric = parseInt(aioLen.replace(/[^\d]/g, ""), 10);
+
+    console.log("aioLenNumeric", aioLenNumeric);
+
+    // Query to fetch all cabinets where radiatorlen is greater than aioLen
+    const query = `
+      SELECT * 
+      FROM cabinet
+      WHERE CAST(radiatorlen AS UNSIGNED) <= ?
+      ORDER BY name;
+    `;
+
+    const [rows] = await db.execute(query, [aioLenNumeric]);
+
+    // If no cabinets found, return a 404 response
+    if (rows.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No cabinets available for selected AIO" });
+    }
+
+    res.json({ cabinets: rows });
+  } catch (err) {
+    // Log the error and send a 500 response if an exception occurs
+    console.error("Error fetching cabinets:", err.message);
     res.status(500).json({ error: "Internal server error" });
   }
 });
