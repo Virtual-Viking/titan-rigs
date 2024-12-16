@@ -9,6 +9,7 @@ import ProductPage from "./components/productPage";
 import CategoryPage from "./components/CategoryPage";
 import RigBuilder from "./components/RigBuilder";
 import AddToCartPage from "./components/AddToCartPage";
+import { CartProvider } from "./context/CartContext"; // Import CartProvider
 
 const App = () => {
   const [category, setCategory] = useState(null);
@@ -23,33 +24,38 @@ const App = () => {
   };
 
   return (
-    <Router>
-      <div className="app-container">
-        <Navbar />
-        <SearchBar onSearch={handleSearch} />
-        <Slider onCategoryChange={handleCategoryChange} />
-        <Routes>
-          {/* Default route for ProductGrid */}
-          <Route
-            path="/"
-            element={
-              <ProductGrid category={category} searchQuery={searchQuery} />
-            }
-          />
+    // Wrap the entire app with CartProvider to provide cart state globally
+    <CartProvider>
+      <Router>
+        <div className="app-container">
+          <Navbar />
+          <SearchBar onSearch={handleSearch} />
+          <Slider onCategoryChange={handleCategoryChange} />
+          <Routes>
+            {/* Default route for ProductGrid */}
+            <Route
+              path="/"
+              element={
+                <ProductGrid category={category} searchQuery={searchQuery} />
+              }
+            />
 
-          {/* Route for specific product details */}
-          <Route path="/product" element={<ProductPage />} />
+            {/* Route for specific product details */}
+            <Route path="/product" element={<ProductPage />} />
 
-          {/* Route for specific category */}
-          <Route path="/category/:categoryName" element={<CategoryPage />} />
+            {/* Route for specific category */}
+            <Route path="/category/:categoryName" element={<CategoryPage />} />
 
-          <Route path="/rig-builder" element={<RigBuilder />} />
+            {/* Route for RigBuilder */}
+            <Route path="/rig-builder" element={<RigBuilder />} />
 
-          <Route path="/add-to-cart" element={<AddToCartPage />} />
-        </Routes>
-        <Footer />
-      </div>
-    </Router>
+            {/* Route for AddToCartPage */}
+            <Route path="/add-to-cart" element={<AddToCartPage />} />
+          </Routes>
+          <Footer />
+        </div>
+      </Router>
+    </CartProvider>
   );
 };
 

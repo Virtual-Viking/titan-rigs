@@ -1,35 +1,28 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext } from "react";
+import { CartContext } from "../context/CartContext"; // Import CartContext
 import "./AddToCartPage.css";
 
 const AddToCartPage = () => {
-  const [cartItems, setCartItems] = useState([]);
-
-  useEffect(() => {
-    // Simulate fetching cart items from local storage or API
-    const savedCartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
-    setCartItems(savedCartItems);
-  }, []);
-
-  const handleRemoveItem = (id) => {
-    const updatedCart = cartItems.filter((item) => item.id !== id);
-    setCartItems(updatedCart);
-    localStorage.setItem("cartItems", JSON.stringify(updatedCart));
-  };
+  const { cart, removeFromCart } = useContext(CartContext); // Access cart and removeFromCart function
 
   const calculateTotalPrice = () =>
-    cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    cart.reduce((total, item) => total + item.price * item.quantity, 0);
 
   return (
     <div className="cart-page">
       <h1>Your Cart</h1>
-      {cartItems.length === 0 ? (
+      {cart.length === 0 ? (
         <p className="empty-cart">Your cart is empty!</p>
       ) : (
         <div>
           <div className="cart-items">
-            {cartItems.map((item) => (
+            {cart.map((item) => (
               <div key={item.id} className="cart-item">
-                <img src={item.image_url} alt={item.name} className="cart-item-image" />
+                <img
+                  src={item.image_url || "default-image-placeholder.png"}
+                  alt={item.name}
+                  className="cart-item-image"
+                />
                 <div className="cart-item-details">
                   <h3>{item.name}</h3>
                   <p>Price: ${item.price}</p>
@@ -37,7 +30,7 @@ const AddToCartPage = () => {
                 </div>
                 <button
                   className="remove-item-button"
-                  onClick={() => handleRemoveItem(item.id)}
+                  onClick={() => removeFromCart(item.id)} // Remove item from cart
                 >
                   Remove
                 </button>
