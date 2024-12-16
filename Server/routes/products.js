@@ -553,8 +553,9 @@ router.get("/search", async (req, res) => {
       "p.id",
       "p.name",
       "p.price",
-      "p.vendor",
       "p.brand",
+      "p.qty",
+      "p.vendor",
       "p.series",
       "p.memory",
       "p.maxtdp",
@@ -563,7 +564,48 @@ router.get("/search", async (req, res) => {
       "p.color",
       "p.release_date",
       "p.offers",
+    ];
+  } else if (category === "ram") {
+    selectFields = [
+      "p.id",
+      "p.name",
+      "p.price",
+      "p.brand",
       "p.qty",
+      "p.model",
+      "p.ddrtype",
+      "p.capacity",
+      "p.sticks",
+      "p.color",
+      "p.release_date",
+      "p.offers",
+    ];
+  } else if (category === "psu") {
+    selectFields = [
+      "p.id",
+      "p.name",
+      "p.price",
+      "p.brand",
+      "p.qty",
+      "p.watt",
+      "p.rating",
+      "p.connector",
+      "p.color",
+      "p.release_date",
+      "p.offers",
+    ];
+  } else if (category === "aio") {
+    selectFields = [
+      "p.id",
+      "p.name",
+      "p.price",
+      "p.brand",
+      "p.qty",
+      "p.len",
+      "p.color",
+      "p.release_date",
+      "p.offers",
+      "p.socket", // AIO socket type (JSON)
     ];
   } else {
     return res.status(400).json({ error: "Invalid category" });
@@ -577,17 +619,12 @@ router.get("/search", async (req, res) => {
     WHERE p.name LIKE ? OR p.brand LIKE ?
   `;
 
-  console.log("Generated Query:", query); // Log the query for debugging
-
   try {
     const [rows] = await db.execute(query, [
       category,
       `%${name}%`,
       `%${name}%`,
     ]);
-
-    // Log the rows to inspect data
-    console.log("Fetched Rows:", rows);
 
     if (rows.length === 0) {
       return res.status(404).json({ message: "No products found" });
@@ -623,7 +660,7 @@ router.get("/search", async (req, res) => {
           acc[row.id].color = row.color;
           acc[row.id].ssdinterface = row.ssdinterface
             ? row.ssdinterface.split(",")
-            : []; // Handling 'set' type field correctly
+            : [];
         } else if (category === "gpu") {
           acc[row.id].vendor = row.vendor;
           acc[row.id].series = row.series;
@@ -632,6 +669,21 @@ router.get("/search", async (req, res) => {
           acc[row.id].connector = row.connector;
           acc[row.id].gpulen = row.gpulen;
           acc[row.id].color = row.color;
+        } else if (category === "ram") {
+          acc[row.id].model = row.model;
+          acc[row.id].ddrtype = row.ddrtype;
+          acc[row.id].capacity = row.capacity;
+          acc[row.id].sticks = row.sticks;
+          acc[row.id].color = row.color;
+        } else if (category === "psu") {
+          acc[row.id].watt = row.watt;
+          acc[row.id].rating = row.rating;
+          acc[row.id].connector = row.connector;
+          acc[row.id].color = row.color;
+        } else if (category === "aio") {
+          acc[row.id].len = row.len;
+          acc[row.id].color = row.color;
+          acc[row.id].socket = row.socket; // Store socket JSON as it is
         }
       }
 

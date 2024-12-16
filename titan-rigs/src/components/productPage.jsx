@@ -104,78 +104,18 @@ const ProductPage = () => {
                   <strong>Offers:</strong> {item.offers}
                 </p>
 
-                {/* Conditional rendering for processor-specific fields */}
-                {category === "processor" && (
+                {/* Conditional rendering for AIO-specific fields */}
+                {category === "aio" && (
                   <>
                     <p>
-                      <strong>Model:</strong> {item.model}
-                    </p>
-                    <p>
-                      <strong>Chipset:</strong> {item.chipset}
-                    </p>
-                    <p>
-                      <strong>Socket:</strong> {item.socket}
-                    </p>
-                    <p>
-                      <strong>Max TDP:</strong> {item.maxtdp}W
-                    </p>
-                  </>
-                )}
-
-                {/* Conditional rendering for motherboard-specific fields */}
-                {category === "motherboard" && (
-                  <>
-                    <p>
-                      <strong>Chipset:</strong> {item.chipset}
-                    </p>
-                    <p>
-                      <strong>Socket:</strong> {item.socket}
-                    </p>
-                    <p>
-                      <strong>Form Factor:</strong> {item.formfactor}
-                    </p>
-                    <p>
-                      <strong>DDR Type:</strong> {item.ddrtype}
-                    </p>
-                    <p>
-                      <strong>RAM Slots:</strong> {item.ramslot}
-                    </p>
-                    <p>
-                      <strong>PCIe Gen:</strong> {item.pciegen}
+                      <strong>Length:</strong> {item.len}
                     </p>
                     <p>
                       <strong>Color:</strong> {item.color}
                     </p>
                     <p>
-                      <strong>SSD Interface:</strong>{" "}
-                      {item.ssdinterface.join(", ")}
-                    </p>
-                  </>
-                )}
-
-                {/* Conditional rendering for GPU-specific fields */}
-                {category === "gpu" && (
-                  <>
-                    <p>
-                      <strong>Vendor:</strong> {item.vendor}
-                    </p>
-                    <p>
-                      <strong>Series:</strong> {item.series}
-                    </p>
-                    <p>
-                      <strong>Memory:</strong> {item.memory} GB
-                    </p>
-                    <p>
-                      <strong>Max TDP:</strong> {item.maxtdp}W
-                    </p>
-                    <p>
-                      <strong>Connector:</strong> {item.connector}
-                    </p>
-                    <p>
-                      <strong>GPU Length:</strong> {item.gpulen} inches
-                    </p>
-                    <p>
-                      <strong>Color:</strong> {item.color}
+                      <strong>Socket:</strong>{" "}
+                      {item.socket ? JSON.stringify(item.socket) : "N/A"}
                     </p>
                   </>
                 )}
