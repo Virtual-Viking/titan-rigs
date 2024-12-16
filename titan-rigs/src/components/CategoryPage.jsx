@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import ProductCard from "./Productcard"; // Import ProductCard component
+import { useNavigate, useParams } from "react-router-dom";
 import "./CategoryPage.css";
 
 const CategoryPage = () => {
   const { categoryName } = useParams();
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -54,9 +54,6 @@ const CategoryPage = () => {
       <div className="product-grid">
         {products.length > 0 ? (
           products.map((product) => (
-<<<<<<< HEAD
-            <ProductCard key={`${product.category}-${product.id}`} product={product} />
-=======
             <div
               key={product.id}
               className="product-card"
@@ -80,7 +77,6 @@ const CategoryPage = () => {
                 <p>Stock: {product.qty}</p>
               </div>
             </div>
->>>>>>> 3acad0f3839c691da4c70c563255ccb9cf22d834
           ))
         ) : (
           <p>No products found in this category.</p>
