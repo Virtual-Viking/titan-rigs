@@ -548,6 +548,23 @@ router.get("/search", async (req, res) => {
       "p.release_date",
       "p.offers",
     ];
+  } else if (category === "gpu") {
+    selectFields = [
+      "p.id",
+      "p.name",
+      "p.price",
+      "p.vendor",
+      "p.brand",
+      "p.series",
+      "p.memory",
+      "p.maxtdp",
+      "p.connector",
+      "p.gpulen",
+      "p.color",
+      "p.release_date",
+      "p.offers",
+      "p.qty",
+    ];
   } else {
     return res.status(400).json({ error: "Invalid category" });
   }
@@ -607,6 +624,14 @@ router.get("/search", async (req, res) => {
           acc[row.id].ssdinterface = row.ssdinterface
             ? row.ssdinterface.split(",")
             : []; // Handling 'set' type field correctly
+        } else if (category === "gpu") {
+          acc[row.id].vendor = row.vendor;
+          acc[row.id].series = row.series;
+          acc[row.id].memory = row.memory;
+          acc[row.id].maxtdp = row.maxtdp;
+          acc[row.id].connector = row.connector;
+          acc[row.id].gpulen = row.gpulen;
+          acc[row.id].color = row.color;
         }
       }
 

@@ -73,7 +73,7 @@ const ProductPage = () => {
                       key={index}
                       src={img.image_url || "default_image_url.jpg"} // Add a fallback if no image URL
                       alt={`${item.name} - Image ${index + 1}`}
-                      className=""
+                      className="product-image"
                       style={{ width: "45%" }}
                     />
                   ))
@@ -81,7 +81,7 @@ const ProductPage = () => {
                   <img
                     src="default_image_url.jpg"
                     alt={item.name}
-                    className=""
+                    className="product-image"
                     style={{ width: "45%" }}
                   />
                 )}
@@ -149,6 +149,33 @@ const ProductPage = () => {
                     <p>
                       <strong>SSD Interface:</strong>{" "}
                       {item.ssdinterface.join(", ")}
+                    </p>
+                  </>
+                )}
+
+                {/* Conditional rendering for GPU-specific fields */}
+                {category === "gpu" && (
+                  <>
+                    <p>
+                      <strong>Vendor:</strong> {item.vendor}
+                    </p>
+                    <p>
+                      <strong>Series:</strong> {item.series}
+                    </p>
+                    <p>
+                      <strong>Memory:</strong> {item.memory} GB
+                    </p>
+                    <p>
+                      <strong>Max TDP:</strong> {item.maxtdp}W
+                    </p>
+                    <p>
+                      <strong>Connector:</strong> {item.connector}
+                    </p>
+                    <p>
+                      <strong>GPU Length:</strong> {item.gpulen} inches
+                    </p>
+                    <p>
+                      <strong>Color:</strong> {item.color}
                     </p>
                   </>
                 )}
