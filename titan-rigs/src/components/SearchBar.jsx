@@ -21,6 +21,8 @@ const Searchbar = () => {
         </Link>
       </div>
 
+
+
       {/* Search Bar */}
       <div className="searchbar-search">
         <div className="search-input-wrapper">
