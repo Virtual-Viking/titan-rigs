@@ -419,7 +419,7 @@ router.get("/cabinets/:aioLen", async (req, res) => {
   try {
     // Convert AIO length to numeric value by removing "mm" and converting to number
     const aioLenNumeric = parseInt(aioLen.replace(/[^\d]/g, ""), 10);
-    console.log("aioLenNumeric", aioLenNumeric);
+    // console.log("aioLenNumeric", aioLenNumeric);
     // Query to fetch all cabinets where radiatorlen is greater than aioLen
     const query = `
       SELECT * 

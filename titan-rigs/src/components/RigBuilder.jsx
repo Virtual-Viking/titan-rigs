@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import "./RigBuilder.css";
+import { CartContext } from "../context/CartContext";
 
 const RigBuilder = () => {
+  const { addToCart } = useContext(CartContext);
   const [selectedBrand, setSelectedBrand] = useState("Intel");
   const [processors, setProcessors] = useState([]);
   const [selectedProcessor, setSelectedProcessor] = useState(null);
@@ -33,7 +35,25 @@ const RigBuilder = () => {
         throw new Error(`Failed to fetch processors: ${response.statusText}`);
       }
       const data = await response.json();
-      setProcessors(data.processors);
+
+      // Fetch processor image URLs
+      const processorsWithImages = await Promise.all(
+        data.processors.map(async (processor) => {
+          // Fetch the image URL for the processor
+          const imageResponse = await fetch(
+            `http://localhost:5000/api/products/category/images/processors/${processor.id}`
+          );
+          const imageData = await imageResponse.json();
+
+          // Add image_url to the processor object
+          return {
+            ...processor,
+            image_url: imageData.image_url || "default-image-placeholder.png", // Default image if not found
+          };
+        })
+      );
+
+      setProcessors(processorsWithImages); // Set the processor state with the image URLs included
     } catch (error) {
       setError(`Error: ${error.message}`);
     } finally {
@@ -53,7 +73,25 @@ const RigBuilder = () => {
         throw new Error(`Failed to fetch motherboards: ${response.statusText}`);
       }
       const data = await response.json();
-      setMotherboards(data.motherboards);
+
+      // Fetch motherboard image URLs
+      const motherboardsWithImages = await Promise.all(
+        data.motherboards.map(async (motherboard) => {
+          // Fetch the image URL for the motherboard
+          const imageResponse = await fetch(
+            `http://localhost:5000/api/products/category/images/motherboard/${motherboard.id}`
+          );
+          const imageData = await imageResponse.json();
+
+          // Add image_url to the motherboard object
+          return {
+            ...motherboard,
+            image_url: imageData.image_url || "default-image-placeholder.png", // Default image if not found
+          };
+        })
+      );
+
+      setMotherboards(motherboardsWithImages); // Set the motherboard state with the image URLs included
     } catch (error) {
       setError(`Error: ${error.message}`);
     } finally {
@@ -61,7 +99,6 @@ const RigBuilder = () => {
     }
   };
 
-  // Fetch RAM based on selected motherboard's DDR type
   const fetchRamByDdrType = async (ddrType) => {
     setLoading(true);
     setError("");
@@ -73,7 +110,25 @@ const RigBuilder = () => {
         throw new Error(`Failed to fetch RAM: ${response.statusText}`);
       }
       const data = await response.json();
-      setRam(data.ram);
+
+      // Fetch RAM image URLs
+      const ramWithImages = await Promise.all(
+        data.ram.map(async (ram) => {
+          // Fetch the image URL for the RAM
+          const imageResponse = await fetch(
+            `http://localhost:5000/api/products/category/images/ram/${ram.id}`
+          );
+          const imageData = await imageResponse.json();
+
+          // Add image_url to the RAM object
+          return {
+            ...ram,
+            image_url: imageData.image_url || "default-image-placeholder.png", // Default image if not found
+          };
+        })
+      );
+
+      setRam(ramWithImages); // Set the RAM state with the image URLs included
     } catch (error) {
       setError(`Error: ${error.message}`);
     } finally {
@@ -90,7 +145,25 @@ const RigBuilder = () => {
         throw new Error(`Failed to fetch SSDs: ${response.statusText}`);
       }
       const data = await response.json();
-      setSsds(data.ssds);
+
+      // Fetch SSD image URLs
+      const ssdsWithImages = await Promise.all(
+        data.ssds.map(async (ssd) => {
+          // Fetch the image URL for the SSD
+          const imageResponse = await fetch(
+            `http://localhost:5000/api/products/category/images/ssd/${ssd.id}`
+          );
+          const imageData = await imageResponse.json();
+
+          // Add image_url to the SSD object
+          return {
+            ...ssd,
+            image_url: imageData.image_url || "default-image-placeholder.png", // Default image if not found
+          };
+        })
+      );
+
+      setSsds(ssdsWithImages); // Set the Ssds state with the image URLs included
     } catch (error) {
       setError(`Error: ${error.message}`);
     } finally {
@@ -98,7 +171,6 @@ const RigBuilder = () => {
     }
   };
 
-  // Fetch all GPUs after selecting SSD
   const fetchAllGpus = async () => {
     setLoading(true);
     setError("");
@@ -108,7 +180,25 @@ const RigBuilder = () => {
         throw new Error(`Failed to fetch GPUs: ${response.statusText}`);
       }
       const data = await response.json();
-      setGpus(data.gpus);
+
+      // Fetch GPU image URLs
+      const gpusWithImages = await Promise.all(
+        data.gpus.map(async (gpu) => {
+          // Fetch the image URL for the GPU
+          const imageResponse = await fetch(
+            `http://localhost:5000/api/products/category/images/gpu/${gpu.id}`
+          );
+          const imageData = await imageResponse.json();
+
+          // Add image_url to the GPU object
+          return {
+            ...gpu,
+            image_url: imageData.image_url || "default-image-placeholder.png", // Default image if not found
+          };
+        })
+      );
+
+      setGpus(gpusWithImages); // Set the Gpus state with the image URLs included
     } catch (error) {
       setError(`Error: ${error.message}`);
     } finally {
@@ -123,10 +213,50 @@ const RigBuilder = () => {
     try {
       const response = await fetch("http://localhost:5000/api/products/aios");
       if (!response.ok) {
-        throw new Error(`Failed to fetch Aios: ${response.statusText}`);
+        throw new Error(`Failed to fetch AIOs: ${response.statusText}`);
       }
       const data = await response.json();
-      setAios(data.aios);
+
+      if (data.aios) {
+        // For each AIO, fetch its image URL using the /images/:productType/:productId endpoint
+        const aiosWithImages = await Promise.all(
+          data.aios.map(async (aio) => {
+            try {
+              const imageResponse = await fetch(
+                `http://localhost:5000/api/products/images/aio/${aio.id}`
+              );
+              const imageData = await imageResponse.json();
+              return {
+                ...aio,
+                image_url:
+                  imageData.image_url || "default-image-placeholder.png",
+              };
+            } catch (error) {
+              console.error(
+                `Error fetching image for AIO ${aio.id}: ${error.message}`
+              );
+              return {
+                ...aio,
+                image_url: "default-image-placeholder.png", // Fallback in case of an error
+              };
+            }
+          })
+        );
+
+        setAios(aiosWithImages); // Set the AIOs state with the image URLs included
+
+        // If a selectedAio is already set, update it with its corresponding image URL
+        if (selectedAio) {
+          const selectedAioWithImage = aiosWithImages.find(
+            (aio) => aio.id === selectedAio.id
+          );
+          if (selectedAioWithImage) {
+            setSelectedAio(selectedAioWithImage); // Update selectedAio with the image_url
+          }
+        }
+      } else {
+        setAios([]); // If no data.aios exists
+      }
     } catch (error) {
       setError(`Error: ${error.message}`);
     } finally {
@@ -166,11 +296,98 @@ const RigBuilder = () => {
         throw new Error(`Failed to fetch cabinets: ${response.statusText}`);
       }
       const data = await response.json();
-      setCabinets(data.cabinets);
+
+      // Fetch cabinet image URLs
+      const cabinetsWithImages = await Promise.all(
+        data.cabinets.map(async (cabinet) => {
+          // Fetch the image URL for the cabinet
+          const imageResponse = await fetch(
+            `http://localhost:5000/api/products/category/images/cabinet/${cabinet.id}`
+          );
+          const imageData = await imageResponse.json();
+
+          // Add image_url to the cabinet object
+          return {
+            ...cabinet,
+            image_url: imageData.image_url || "default-image-placeholder.png", // Default image if not found
+          };
+        })
+      );
+
+      setCabinets(cabinetsWithImages); // Set the cabinet state with the image URLs included
     } catch (error) {
       setError(`Error: ${error.message}`);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Function to handle adding selected components to the cart
+  const handleAddToCart = () => {
+    if (
+      selectedProcessor &&
+      selectedMotherboard &&
+      selectedRam &&
+      selectedSsd &&
+      selectedGpu &&
+      selectedAio &&
+      selectedCabinet
+    ) {
+      const rig = [
+        {
+          id: selectedProcessor.id,
+          name: selectedProcessor.name,
+          type: "Processor",
+          price: selectedProcessor.price,
+          image_url: selectedProcessor.image_url,
+        },
+        {
+          id: selectedMotherboard.id,
+          name: selectedMotherboard.name,
+          type: "Motherboard",
+          price: selectedMotherboard.price,
+          image_url: selectedMotherboard.image_url,
+        },
+        {
+          id: selectedRam.id,
+          name: selectedRam.name,
+          type: "RAM",
+          price: selectedRam.price,
+          image_url: selectedRam.image_url,
+        },
+        {
+          id: selectedSsd.id,
+          name: selectedSsd.name,
+          type: "SSD",
+          price: selectedSsd.price,
+          image_url: selectedSsd.image_url,
+        },
+        {
+          id: selectedGpu.id,
+          name: selectedGpu.name,
+          type: "GPU",
+          price: selectedGpu.price,
+          image_url: selectedGpu.image_url,
+        },
+        {
+          id: selectedAio.id,
+          name: selectedAio.name,
+          type: "AIO",
+          price: selectedAio.price,
+          image_url: selectedAio.image_url,
+        },
+        {
+          id: selectedCabinet.id,
+          name: selectedCabinet.name,
+          type: "Cabinet",
+          price: selectedCabinet.price,
+          image_url: selectedCabinet.image_url,
+        },
+      ];
+
+      addToCart(rig); // Add the rig configuration to the cart
+    } else {
+      alert("Please select all components before adding to the cart.");
     }
   };
 
@@ -435,6 +652,13 @@ const RigBuilder = () => {
           </div>
         </div>
       )}
+
+      {/* Add to Cart Button */}
+      <div className="add-to-cart-container">
+        <button className="add-to-cart-button" onClick={handleAddToCart}>
+          Add to Cart
+        </button>
+      </div>
     </div>
   );
 };

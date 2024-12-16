@@ -1,8 +1,11 @@
 import React, { useContext, useState } from "react";
 import { CartContext } from "../context/CartContext"; // Import the CartContext
 import "./CheckoutPage.css";
+import { useNavigate } from "react-router-dom";
 
 const CheckoutPage = () => {
+  const navigate = useNavigate();
+
   const { cart, clearCart } = useContext(CartContext); // Access the cart from context
   const [orderPlaced, setOrderPlaced] = useState(false); // State to check if the order is placed
   const [error, setError] = useState(""); // State to store any error message
@@ -61,13 +64,19 @@ const CheckoutPage = () => {
     }
   };
 
+  const handleBackToHome = () => {
+    navigate("/"); // Redirect to the homepage
+  };
+
   return (
     <div className="checkout-page">
       {orderPlaced ? (
         <div>
           <h1>Order Placed Successfully!</h1>
           <p>Thank you for your order! Your items will be shipped shortly.</p>
-          <button className="back-to-home-button">Back to Home</button>
+          <button className="back-to-home-button" onClick={handleBackToHome}>
+            Back to Home
+          </button>
         </div>
       ) : (
         <div>
