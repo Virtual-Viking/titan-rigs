@@ -87,7 +87,7 @@ const Searchbar = () => {
           <img src={logo} alt="Logo" className="logo" />
         </Link>
       </div>
-      <div className="searchbar-search">
+      {/* <div className="searchbar-search">
         <div className="search-input-wrapper">
           <select
             className="search-category-filter"
@@ -137,7 +137,7 @@ const Searchbar = () => {
             )}
           </div>
         )}
-      </div>
+      </div> */}
       <div className="searchbar-cart">
         <Link to="/add-to-cart" className="cart-icon-wrapper">
           <img src={cartIcon} alt="Cart" className="cart-icon" />

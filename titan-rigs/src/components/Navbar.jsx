@@ -44,14 +44,14 @@ const Navbar = () => {
 
         {/* Right Section */}
         <div className="navbar-right">
-          <a href="/track-order" className="navbar-icon">
+          {/* <a href="/track-order" className="navbar-icon">
             <img src={trackIcon} alt="Track Order" />
             Track Your Package
-          </a>
+          </a> */}
           <div className="navbar-divider"></div>
 
           {/* Wishlist Icon: Visible only when logged in */}
-          {isLoggedIn && (
+          {/* {isLoggedIn && (
             <>
               <a href="/wishlist" className="navbar-icon">
                 <img src={wishlistIcon} alt="Wishlist" />
@@ -59,12 +59,12 @@ const Navbar = () => {
               </a>
               <div className="navbar-divider"></div>
             </>
-          )}
+          )} */}
 
-          <Link to="/add-to-cart" className="navbar-icon">
+          {/* <Link to="/add-to-cart" className="navbar-icon">
             <img src={cartIcon} alt="Cart" />
             Cart
-          </Link>
+          </Link> */}
           <div className="navbar-divider"></div>
 
           {/* User Icon */}
