@@ -6,14 +6,12 @@
   padding: 15px;
   outline: none; 
   border: none; /* Remove default border */
-    box-shadow: none; /* Ensure no shadow mimics a border */
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  box-shadow: none; /* Ensure no shadow mimics a border */
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   cursor: pointer;
+  position: relative; /* Ensure child elements (like .add-to-cart) are positioned relative to the card */
 }
-.product-card::before,
-.product-card::after {
-    border: none;
-}
+
 .product-card:hover {
   transform: translateY(-4px);
   box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.15);
@@ -22,19 +20,11 @@
 .product-image {
   width: 40%;
   height: auto;
-  /* border-radius: 8px; */
 }
 
 .product-info {
   flex: 1;
   margin-left: 15px;
-}
-
-.product-category {
-  align-items: top;
-  font-size: 0.85rem;
-  color: gray;
-  margin-bottom: 8px;
 }
 
 .product-title {
@@ -50,6 +40,7 @@
   margin-bottom: 10px;
 }
 
+/* Initially hide the Add to Cart button */
 .add-to-cart {
   position: absolute;
   right: 15px;
@@ -58,10 +49,14 @@
   height: 40px;
   background-color: #007bff;
   border-radius: 50%;
-  display: flex;
+  display: none; /* Hide by default */
   align-items: center;
   justify-content: center;
   transition: background-color 0.2s ease;
+}
+
+.product-card:hover .add-to-cart {
+  display: flex; /* Show button on hover */
 }
 
 .add-to-cart:hover {
