@@ -413,17 +413,13 @@ router.get("/psu/:maxtdp", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
 // GET: Fetch all cabinets compatible with selected AIO
 router.get("/cabinets/:aioLen", async (req, res) => {
   const { aioLen } = req.params;
-
   try {
     // Convert AIO length to numeric value by removing "mm" and converting to number
     const aioLenNumeric = parseInt(aioLen.replace(/[^\d]/g, ""), 10);
-
     console.log("aioLenNumeric", aioLenNumeric);
-
     // Query to fetch all cabinets where radiatorlen is greater than aioLen
     const query = `
       SELECT * 
@@ -431,16 +427,13 @@ router.get("/cabinets/:aioLen", async (req, res) => {
       WHERE CAST(radiatorlen AS UNSIGNED) <= ?
       ORDER BY name;
     `;
-
     const [rows] = await db.execute(query, [aioLenNumeric]);
-
     // If no cabinets found, return a 404 response
     if (rows.length === 0) {
       return res
         .status(404)
         .json({ message: "No cabinets available for selected AIO" });
     }
-
     res.json({ cabinets: rows });
   } catch (err) {
     // Log the error and send a 500 response if an exception occurs

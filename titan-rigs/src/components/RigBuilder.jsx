@@ -1,442 +1,445 @@
-import React, { useState, useEffect } from "react";
-import "./RigBuilder.css";
+const express = require("express");
+const router = express.Router();
+const multer = require("multer");
+const path = require("path");
+const mysql = require("mysql2/promise");
 
-const RigBuilder = () => {
-  const [selectedBrand, setSelectedBrand] = useState("Intel");
-  const [processors, setProcessors] = useState([]);
-  const [selectedProcessor, setSelectedProcessor] = useState(null);
-  const [motherboards, setMotherboards] = useState([]);
-  const [selectedMotherboard, setSelectedMotherboard] = useState(null);
-  const [ram, setRam] = useState([]);
-  const [selectedRam, setSelectedRam] = useState(null);
-  const [ssds, setSsds] = useState([]);
-  const [selectedSsd, setSelectedSsd] = useState(null); // SSD state
-  const [gpus, setGpus] = useState([]);
-  const [selectedGpu, setSelectedGpu] = useState(null); // GPU state
-  const [aios, setAios] = useState([]);
-  const [selectedAio, setSelectedAio] = useState(null); // AIO state
-  const [psus, setPsus] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [cabinets, setCabinets] = useState([]);
-  const [selectedCabinet, setSelectedCabinet] = useState(null);
+// Import db connection (ensure this is properly set up in your project)
+const db = require("../db"); // Adjust the path as per your project structure
 
-  // Fetch processors based on selected brand
-  const fetchProcessorsByBrand = async (brand) => {
-    setLoading(true);
-    setError("");
-    try {
-      const response = await fetch(
-        `http://localhost:5000/api/products/processors/${brand.toLowerCase()}`
-      );
-      if (!response.ok) {
-        throw new Error(`Failed to fetch processors: ${response.statusText}`);
-      }
-      const data = await response.json();
-      setProcessors(data.processors);
-    } catch (error) {
-      setError(`Error: ${error.message}`);
-    } finally {
-      setLoading(false);
+// Storage configuration for image upload
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "./uploads/"); // Adjust this path as needed
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage });
+
+// GET: Fetch Products
+// router.get("/", async (req, res) => {
+//   const { page = 1, limit = 20, search = "" } = req.query;
+//   const offset = (page - 1) * limit;
+
+//   let baseQuery = `
+//     SELECT 'aio' AS category, id, name, brand, price, qty FROM aio
+//     UNION ALL
+//     SELECT 'cabinet' AS category, id, name, brand, price, qty FROM cabinet
+//     UNION ALL
+//     SELECT 'accessories' AS category, id, name, brand, price, qty FROM accessories
+//     UNION ALL
+//     SELECT 'gpu' AS category, id, name, brand, price, qty FROM gpu
+//     UNION ALL
+//     SELECT 'motherboard' AS category, id, name, brand, price, qty FROM motherboard
+//     UNION ALL
+//     SELECT 'processors' AS category, id, name, brand, price, qty FROM processors
+//     UNION ALL
+//     SELECT 'psu' AS category, id, name, brand, price, qty FROM psu
+//     UNION ALL
+//     SELECT 'ram' AS category, id, name, brand, price, qty FROM ram
+//     UNION ALL
+//     SELECT 'ssd' AS category, id, name, brand, price, qty FROM ssd`;
+
+//   let query;
+//   let values = [];
+
+//   // Add search functionality
+//   if (search) {
+//     query = `
+//       SELECT * FROM (
+//         ${baseQuery}
+//       ) AS all_products
+//       WHERE name LIKE ? OR brand LIKE ?
+//       ORDER BY category, id
+//       LIMIT ? OFFSET ?`;
+//     values = [`%${search}%`, `%${search}%`, parseInt(limit), parseInt(offset)];
+//   } else {
+//     // Base query for pagination
+//     query = `
+//       SELECT * FROM (
+//         ${baseQuery}
+//       ) AS all_products
+//       ORDER BY category, id
+//       LIMIT ? OFFSET ?`;
+//     values = [parseInt(limit), parseInt(offset)];
+//   }
+
+//   try {
+//     // Execute query and fetch products
+//     const [rows] = await db.execute(query, values);
+//     res.status(200).json({ products: rows });
+//   } catch (err) {
+//     console.error("SQL Query Error:", err.message);
+//     res.status(500).json({ error: "Server error" });
+//   }
+// });
+
+// trial api
+router.get("/", async (req, res) => {
+  const { page = 1, search } = req.query;
+  const itemsPerPage = 20;
+  const offset = (page - 1) * itemsPerPage;
+
+  let query = `
+    SELECT 'processors' AS category, id, name, price, brand, qty FROM processors
+    UNION ALL
+    SELECT 'motherboard' AS category, id, name, price, brand, qty FROM motherboard
+    UNION ALL
+    SELECT 'gpu' AS category, id, name, price, brand, qty FROM gpu
+    UNION ALL
+    SELECT 'aio' AS category, id, name, price, brand, qty FROM aio
+    UNION ALL
+    SELECT 'cabinet' AS category, id, name, price, brand, qty FROM cabinet
+    UNION ALL
+    SELECT 'psu' AS category, id, name, price, brand, qty FROM psu
+    UNION ALL
+    SELECT 'ram' AS category, id, name, price, brand, qty FROM ram
+    UNION ALL
+    SELECT 'ssd' AS category, id, name, price, brand, qty FROM ssd
+    LIMIT ${itemsPerPage} OFFSET ${offset};
+  `;
+
+  if (search) {
+    query = `
+        SELECT 'processors AS category', id, name, price, brand, qty FROM processors
+        UNION ALL
+        SELECT 'motherboard AS category', id, name, price, brand, qty FROM motherboard
+        UNION ALL
+        SELECT 'gpu' AS category, id, name, price, brand, qty FROM gpu
+        UNION ALL
+        SELECT 'aio' AS category, id, name, price, brand, qty FROM aio
+        UNION ALL
+        SELECT 'cabinet' AS category, id, name, price, brand, qty FROM cabinet
+        UNION ALL
+        SELECT 'psu' AS category, id, name, price, brand, qty FROM psu
+        UNION ALL
+        SELECT 'ram' AS category, id, name, price, brand, qty FROM ram
+        UNION ALL
+        SELECT 'ssd' AS category, id, name, price, brand, qty FROM ssd
+      ) AS all_products
+      WHERE name LIKE '%${search}%'
+      LIMIT ${itemsPerPage} OFFSET ${offset};
+    `;
+  }
+
+  try {
+    // console.log("SQL Query:", query);
+
+    const [rows] = await db.execute(query);
+    res.json({ products: rows });
+  } catch (err) {
+    // console.error("SQL Query Error:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+router.get("/category/:categoryName", async (req, res) => {
+  const { categoryName } = req.params;
+
+  try {
+    const query = `SELECT * FROM ${mysql.escapeId(categoryName)}`;
+    const [rows] = await db.execute(query);
+
+    if (rows.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `No products found in ${categoryName}.` });
     }
-  };
 
-  // Fetch motherboards based on the selected processor's chipset
-  const fetchMotherboardsByChipset = async (chipset) => {
-    setLoading(true);
-    setError("");
-    try {
-      const response = await fetch(
-        `http://localhost:5000/api/products/motherboards/${chipset}`
-      );
-      if (!response.ok) {
-        throw new Error(`Failed to fetch motherboards: ${response.statusText}`);
-      }
-      const data = await response.json();
-      setMotherboards(data.motherboards);
-    } catch (error) {
-      setError(`Error: ${error.message}`);
-    } finally {
-      setLoading(false);
+    res.json({ products: rows });
+  } catch (error) {
+    // console.error("Error fetching category products:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// get image api for productgrid.jsx
+router.get("/images/:productType/:productId", async (req, res) => {
+  const { productType, productId } = req.params;
+
+  const query = `
+    SELECT image_url
+    FROM product_images
+    WHERE product_type = ? AND product_id = ?
+    LIMIT 1
+  `;
+
+  try {
+    const [rows] = await db.execute(query, [productType, productId]);
+    // console.log("Image Query Result:", rows); // Debugging
+    if (rows.length > 0) {
+      res.json({ image_url: rows[0].image_url });
+    } else {
+      res.status(404).json({ error: "Image not found" });
     }
-  };
+  } catch (err) {
+    // console.error("SQL Query Error:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+});
 
-  // Fetch RAM based on selected motherboard's DDR type
-  const fetchRamByDdrType = async (ddrType) => {
-    setLoading(true);
-    setError("");
-    try {
-      const response = await fetch(
-        `http://localhost:5000/api/products/ram/${ddrType}`
-      );
-      if (!response.ok) {
-        throw new Error(`Failed to fetch RAM: ${response.statusText}`);
-      }
-      const data = await response.json();
-      setRam(data.ram);
-    } catch (error) {
-      setError(`Error: ${error.message}`);
-    } finally {
-      setLoading(false);
+// separate Fetch images api for category page and product page since union table will alter product id and image will not load.
+router.get("/category/images/:categoryName/:productId", async (req, res) => {
+  const { categoryName, productId } = req.params;
+
+  const query = `
+    SELECT image_url
+    FROM product_images
+    WHERE product_type = ? AND product_id = ?
+    LIMIT 1
+  `;
+
+  try {
+    const [rows] = await db.execute(query, [categoryName, productId]);
+    if (rows.length > 0) {
+      res.json({ image_url: rows[0].image_url });
+    } else {
+      res.status(404).json({ error: "Image not found" });
     }
-  };
+  } catch (err) {
+    // console.error("Error fetching category images:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+});
 
-  const fetchAllSsds = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const response = await fetch("http://localhost:5000/api/products/ssds");
-      if (!response.ok) {
-        throw new Error(`Failed to fetch SSDs: ${response.statusText}`);
-      }
-      const data = await response.json();
-      setSsds(data.ssds);
-    } catch (error) {
-      setError(`Error: ${error.message}`);
-    } finally {
-      setLoading(false);
+// POST: Add New Product
+router.post("/", upload.single("image"), async (req, res) => {
+  const { name, price, category } = req.body;
+  const image = req.file ? req.file.filename : null;
+
+  try {
+    const query = `
+      INSERT INTO ${mysql.escapeId(category)} (name, price, image)
+      VALUES (?, ?, ?)`;
+    await db.execute(query, [name, price, image]);
+    res.status(201).json({ message: "Product added successfully!" });
+  } catch (err) {
+    // console.error(err);
+    res.status(500).json({ error: "Failed to add product" });
+  }
+});
+
+// GET: Fetch processors by brand
+router.get("/processors/:brand", async (req, res) => {
+  const { brand } = req.params;
+
+  // console.log(`Request received for brand: ${brand}`);
+
+  if (!["intel", "amd"].includes(brand.toLowerCase())) {
+    return res.status(400).json({ error: "Invalid brand specified" });
+  }
+
+  try {
+    const query = `
+      SELECT * 
+      FROM processors
+      WHERE brand = ?
+      ORDER BY name;
+    `;
+
+    const [rows] = await db.execute(query, [brand]);
+
+    if (rows.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `No processors found for ${brand}` });
     }
-  };
 
-  // Fetch all GPUs after selecting SSD
-  const fetchAllGpus = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const response = await fetch("http://localhost:5000/api/products/gpus");
-      if (!response.ok) {
-        throw new Error(`Failed to fetch GPUs: ${response.statusText}`);
-      }
-      const data = await response.json();
-      setGpus(data.gpus);
-    } catch (error) {
-      setError(`Error: ${error.message}`);
-    } finally {
-      setLoading(false);
+    // console.log("Found processors:", rows); // Log the found processors
+
+    res.json({ processors: rows });
+  } catch (err) {
+    console.error("Error fetching processors by brand:", err.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// GET: Fetch motherboard by chipset
+router.get("/motherboards/:chipset", async (req, res) => {
+  const { chipset } = req.params;
+
+  // console.log(`Request received for chipset: ${chipset}`);
+
+  try {
+    const query = `
+      SELECT * 
+      FROM motherboard
+      WHERE chipset = ?
+      ORDER BY name;
+    `;
+
+    const [rows] = await db.execute(query, [chipset]);
+
+    if (rows.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `No motherboards found for chipset: ${chipset}` });
     }
-  };
 
-  // Fetch all AIOs after selecting GPU
-  const fetchAllAios = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const response = await fetch("http://localhost:5000/api/products/aios");
-      if (!response.ok) {
-        throw new Error(`Failed to fetch Aios: ${response.statusText}`);
-      }
-      const data = await response.json();
-      setAios(data.aios);
-    } catch (error) {
-      setError(`Error: ${error.message}`);
-    } finally {
-      setLoading(false);
+    res.json({ motherboards: rows });
+  } catch (err) {
+    // console.error("Error fetching motherboards by chipset:", err.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// GET: RAM based on DDR type
+router.get("/ram/:ddrtype", async (req, res) => {
+  const { ddrtype } = req.params;
+
+  // console.log(`Request received for DDR type: ${ddrtype}`);
+
+  try {
+    const query = `
+      SELECT * 
+      FROM ram
+      WHERE ddrtype = ?
+      ORDER BY name;
+    `;
+
+    const [rows] = await db.execute(query, [ddrtype]);
+
+    if (rows.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `No RAM found for DDR type: ${ddrtype}` });
     }
-  };
 
-  // Fetch PSUs based on max TDP (3x the maximum wattage)
-  const fetchPsus = async (processorTdp) => {
-    setLoading(true);
-    setError("");
-    const minWatt = processorTdp * 3;
-    try {
-      const response = await fetch(
-        `http://localhost:5000/api/products/psu/${minWatt}`
-      );
-      if (!response.ok)
-        throw new Error(`Failed to fetch PSUs: ${response.statusText}`);
-      const data = await response.json();
-      setPsus(data.psus);
-    } catch (error) {
-      setError(`Error: ${error.message}`);
-    } finally {
-      setLoading(false);
+    res.json({ ram: rows });
+  } catch (err) {
+    // console.error("Error fetching RAM by DDR type:", err.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// GET: Fetch all SSDs
+router.get("/ssds", async (req, res) => {
+  try {
+    const query = `
+      SELECT * 
+      FROM ssd
+      ORDER BY name;
+    `;
+
+    const [rows] = await db.execute(query);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "No SSDs found" });
     }
-  };
 
-  // Fetch cabinets based on selected AIO length
-  const fetchCabinetsByAioLength = async (aioLength) => {
-    setLoading(true);
-    setError("");
-    try {
-      const response = await fetch(
-        `http://localhost:5000/api/products/cabinets/${aioLength}`
-      );
-      if (!response.ok) {
-        throw new Error(`Failed to fetch cabinets: ${response.statusText}`);
-      }
-      const data = await response.json();
-      setCabinets(data.cabinets);
-    } catch (error) {
-      setError(`Error: ${error.message}`);
-    } finally {
-      setLoading(false);
+    res.json({ ssds: rows });
+  } catch (err) {
+    // console.error("Error fetching SSDs:", err.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// GET: Fetch all GPUs
+router.get("/gpus", async (req, res) => {
+  try {
+    const query = `
+      SELECT * 
+      FROM gpu
+      ORDER BY name;
+    `;
+    const [rows] = await db.execute(query);
+
+    // If no GPUs found, return a 404 response
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "No GPUs found" });
     }
-  };
 
-  // Handle processor change
-  const handleProcessorChange = (e) => {
-    const processorId = e.target.value;
-    const processor = processors.find((p) => p.id === parseInt(processorId));
-    setSelectedProcessor(processor);
-  };
+    res.json({ gpus: rows });
+  } catch (err) {
+    // console.error("Error fetching GPUs:", err.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
-  // Handle motherboard change
-  const handleMotherboardChange = (e) => {
-    const motherboardId = e.target.value;
-    const motherboard = motherboards.find(
-      (m) => m.id === parseInt(motherboardId)
-    );
-    setSelectedMotherboard(motherboard);
-    fetchRamByDdrType(motherboard.ddrtype);
-  };
+// GET: Fetch all AIOs
+router.get("/aios", async (req, res) => {
+  try {
+    // Query to fetch all AIOs
+    const query = `
+      SELECT * 
+      FROM aio
+      ORDER BY name;
+    `;
 
-  // Handle RAM change
-  const handleRamChange = (e) => {
-    const selectedRamId = e.target.value;
-    const selectedRam = ram.find((r) => r.id === parseInt(selectedRamId));
-    setSelectedRam(selectedRam);
-    fetchAllSsds();
-  };
+    const [rows] = await db.execute(query);
 
-  // Handle SSD change
-  const handleSsdChange = (e) => {
-    const selectedSsdId = e.target.value;
-    const selectedSsd = ssds.find((s) => s.id === parseInt(selectedSsdId));
-    setSelectedSsd(selectedSsd);
-    fetchAllGpus();
-  };
-
-  // Handle GPU change
-  const handleGpuChange = (e) => {
-    const selectedGpuId = e.target.value;
-    const selectedGpu = gpus.find((gpu) => gpu.id === parseInt(selectedGpuId));
-    setSelectedGpu(selectedGpu);
-    fetchAllAios();
-  };
-
-  // Handle AIO change
-  const handleAioChange = (e) => {
-    const selectedAioId = e.target.value;
-    const selectedAio = aios.find((aio) => aio.id === parseInt(selectedAioId));
-    setSelectedAio(selectedAio);
-    fetchPsus(selectedProcessor.maxtdp); // Assuming the processor TDP is needed
-    fetchCabinetsByAioLength(
-      parseInt(selectedAio.len.replace(/[^\d]/g, ""), 10)
-    );
-  };
-
-  // Fetch processors when the selected brand changes
-  useEffect(() => {
-    fetchProcessorsByBrand(selectedBrand);
-  }, [selectedBrand]);
-
-  // Fetch motherboards when the selected processor changes
-  useEffect(() => {
-    if (selectedProcessor) {
-      const chipset = selectedProcessor.chipset;
-      fetchMotherboardsByChipset(chipset);
+    // If no AIOs found, return a 404 response
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "No AIO coolers found" });
     }
-  }, [selectedProcessor]);
 
-  useEffect(() => {
-    if (selectedAio) {
-      fetchCabinetsByAioLength(selectedAio.len.replace(/[^\d]/g, ""), 10);
+    res.json({ aios: rows });
+  } catch (err) {
+    // Log the error and send a 500 response if an exception occurs
+    // console.error("Error fetching AIO coolers:", err.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/psu/:maxtdp", async (req, res) => {
+  const { maxtdp } = req.params; // Extract `maxtdp` from URL parameters
+
+  // console.log(`Request received for PSU with minimum wattage: ${maxtdp * 3}`);
+
+  try {
+    const minWatt = maxtdp * 3; // Calculate PSU wattage threshold (maxtdp * 3)
+
+    const query = `
+      SELECT * 
+      FROM psu
+      WHERE watt > ?
+      ORDER BY watt;
+    `;
+
+    const [rows] = await db.execute(query, [minWatt]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        message: `No PSUs found with wattage greater than ${minWatt}`,
+      });
     }
-  }, [selectedAio]);
 
-  return (
-    <div className="dropdown-container">
-      {/* Processor Brand Dropdown */}
-      <label className="dropdown-label">Select Processor Brand:</label>
-      <div className="dropdown">
-        <select
-          value={selectedBrand}
-          onChange={(e) => setSelectedBrand(e.target.value)}
-          className="dropdown-select"
-        >
-          <option value="Intel">Intel</option>
-          <option value="AMD">AMD</option>
-        </select>
-      </div>
+    res.json({ psus: rows });
+  } catch (err) {
+    // console.error("Error fetching PSUs:", err.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+// GET: Fetch all cabinets compatible with selected AIO
+router.get("/cabinets/:aioLen", async (req, res) => {
+  const { aioLen } = req.params;
+  try {
+    // Convert AIO length to numeric value by removing "mm" and converting to number
+    const aioLenNumeric = parseInt(aioLen.replace(/[^\d]/g, ""), 10);
+    console.log("aioLenNumeric", aioLenNumeric);
+    // Query to fetch all cabinets where radiatorlen is greater than aioLen
+    const query = `
+      SELECT * 
+      FROM cabinet
+      WHERE CAST(radiatorlen AS UNSIGNED) <= ?
+      ORDER BY name;
+    `;
+    const [rows] = await db.execute(query, [aioLenNumeric]);
+    // If no cabinets found, return a 404 response
+    if (rows.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No cabinets available for selected AIO" });
+    }
+    res.json({ cabinets: rows });
+  } catch (err) {
+    // Log the error and send a 500 response if an exception occurs
+    console.error("Error fetching cabinets:", err.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
-      {/* Processor Dropdown */}
-      <label className="dropdown-label">Select Processor:</label>
-      <div className="dropdown">
-        <select
-          value={selectedProcessor?.id || ""}
-          onChange={handleProcessorChange}
-          className="dropdown-select"
-        >
-          {loading && <option>Loading processors...</option>}
-          {error && <option>Error: {error}</option>}
-          {processors.length > 0
-            ? processors.map((processor) => (
-                <option key={processor.id} value={processor.id}>
-                  {processor.name} - {processor.price}$
-                </option>
-              ))
-            : !loading && <option>No processors available</option>}
-        </select>
-      </div>
-
-      {/* Motherboard Dropdown */}
-      {selectedProcessor && (
-        <div>
-          <label className="dropdown-label">Select Motherboard:</label>
-          <div className="dropdown">
-            <select
-              value={selectedMotherboard?.id || ""}
-              onChange={handleMotherboardChange}
-              className="dropdown-select"
-            >
-              {motherboards.length > 0
-                ? motherboards.map((motherboard) => (
-                    <option key={motherboard.id} value={motherboard.id}>
-                      {motherboard.name} - {motherboard.price}$
-                    </option>
-                  ))
-                : !loading && <option>No motherboards available</option>}
-            </select>
-          </div>
-        </div>
-      )}
-
-      {/* RAM Dropdown */}
-      {selectedMotherboard && (
-        <div>
-          <label className="dropdown-label">Select RAM:</label>
-          <div className="dropdown">
-            <select
-              value={selectedRam?.id || ""}
-              onChange={handleRamChange}
-              className="dropdown-select"
-            >
-              {ram.length > 0
-                ? ram.map((ramItem) => (
-                    <option key={ramItem.id} value={ramItem.id}>
-                      {ramItem.name} - {ramItem.price}$
-                    </option>
-                  ))
-                : !loading && <option>No RAM available</option>}
-            </select>
-          </div>
-        </div>
-      )}
-
-      {/* SSD Dropdown */}
-      {selectedRam && (
-        <div>
-          <label className="dropdown-label">Select SSD:</label>
-          <div className="dropdown">
-            <select
-              value={selectedSsd?.id || ""}
-              onChange={handleSsdChange}
-              className="dropdown-select"
-            >
-              {ssds.length > 0
-                ? ssds.map((ssd) => (
-                    <option key={ssd.id} value={ssd.id}>
-                      {ssd.name} - {ssd.price}$
-                    </option>
-                  ))
-                : !loading && <option>No SSDs available</option>}
-            </select>
-          </div>
-        </div>
-      )}
-
-      {/* GPU Dropdown */}
-      {selectedSsd && (
-        <div>
-          <label className="dropdown-label">Select GPU:</label>
-          <div className="dropdown">
-            <select
-              value={selectedGpu?.id || ""}
-              onChange={handleGpuChange}
-              className="dropdown-select"
-            >
-              {gpus.length > 0
-                ? gpus.map((gpu) => (
-                    <option key={gpu.id} value={gpu.id}>
-                      {gpu.name} - {gpu.memory}GB - {gpu.price}$
-                    </option>
-                  ))
-                : !loading && <option>No GPUs available</option>}
-            </select>
-          </div>
-        </div>
-      )}
-
-      {/* AIO Dropdown */}
-      {selectedGpu && (
-        <div>
-          <label className="dropdown-label">Select AIO:</label>
-          <div className="dropdown">
-            <select
-              value={selectedAio?.id || ""}
-              onChange={handleAioChange}
-              className="dropdown-select"
-            >
-              {aios.length > 0
-                ? aios.map((aio) => (
-                    <option key={aio.id} value={aio.id}>
-                      {aio.name} - {aio.memory}GB - {aio.price}$
-                    </option>
-                  ))
-                : !loading && <option>No AIOs available</option>}
-            </select>
-          </div>
-        </div>
-      )}
-
-      {/* PSU Dropdown */}
-      {selectedAio && (
-        <div>
-          <label className="dropdown-label">Select PSU:</label>
-          <div className="dropdown">
-            <select className="dropdown-select">
-              {psus.length > 0
-                ? psus.map((psu) => (
-                    <option key={psu.id} value={psu.id}>
-                      {psu.name} - {psu.watt}W - {psu.price}$
-                    </option>
-                  ))
-                : !loading && <option>No PSUs available</option>}
-            </select>
-          </div>
-        </div>
-      )}
-
-      {/* Cabinet Dropdown */}
-      {selectedAio && (
-        <div>
-          <label className="dropdown-label">Select Cabinet:</label>
-          <div className="dropdown">
-            <select
-              value={selectedCabinet?.id || ""}
-              onChange={(e) =>
-                setSelectedCabinet(
-                  cabinets.find(
-                    (cabinet) => cabinet.id === parseInt(e.target.value)
-                  )
-                )
-              }
-              className="dropdown-select"
-            >
-              {cabinets.length > 0
-                ? cabinets.map((cabinet) => (
-                    <option key={cabinet.id} value={cabinet.id}>
-                      {cabinet.name} - {cabinet.price}$
-                    </option>
-                  ))
-                : !loading && <option>No cabinets available</option>}
-            </select>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default RigBuilder;
+module.exports = router;

@@ -2,3 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+*, ::before, ::after {
+    border-width: 0;
+    border-style: none; /* Change solid to none */
+    border-color: transparent;
+}

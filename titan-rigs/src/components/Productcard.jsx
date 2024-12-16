@@ -7,6 +7,7 @@ const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const [imageUrl, setImageUrl] = useState(null);
 
+  // Fetch product image from the API
   useEffect(() => {
     const fetchImage = async () => {
       try {
@@ -23,17 +24,18 @@ const ProductCard = ({ product }) => {
     fetchImage();
   }, [product.category, product.id]);
 
+  // Navigate to the ProductPage when the card is clicked
   const navigateToProductPage = () => {
-    navigate(`/product/${product.id}`);
+    navigate(`/product?name=${encodeURIComponent(product.name)}&category=${encodeURIComponent(product.category)}`);
   };
 
   return (
-    <div className="product-card" onClick={navigateToProductPage}>
-      <img
-        src={imageUrl}
-        alt={product.name}
-        className="product-image"
-      />
+    <div
+      className="product-card"
+      onClick={navigateToProductPage}
+      style={{ border: "1px solid transparent" }}
+    >
+      <img src={imageUrl} alt={product.name} className="product-image" />
       <div className="product-info">
         <p className="product-category">{product.category}</p>
         <h3 className="product-title">{product.name}</h3>
@@ -47,5 +49,3 @@ const ProductCard = ({ product }) => {
 };
 
 export default ProductCard;
-
-

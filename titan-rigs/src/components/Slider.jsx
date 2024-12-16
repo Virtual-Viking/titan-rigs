@@ -125,4 +125,6 @@ const Slider = ({ onCategoryChange }) => {
   );
 };
 
+
+
 export default Slider;
