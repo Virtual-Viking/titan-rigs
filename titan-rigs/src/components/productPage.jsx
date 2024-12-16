@@ -73,7 +73,7 @@ const ProductPage = () => {
                       key={index}
                       src={img.image_url || "default_image_url.jpg"} // Add a fallback if no image URL
                       alt={`${item.name} - Image ${index + 1}`}
-                      className="product-image"
+                      className=""
                       style={{ width: "45%" }}
                     />
                   ))
@@ -81,7 +81,7 @@ const ProductPage = () => {
                   <img
                     src="default_image_url.jpg"
                     alt={item.name}
-                    className="product-image"
+                    className=""
                     style={{ width: "45%" }}
                   />
                 )}
@@ -104,7 +104,116 @@ const ProductPage = () => {
                   <strong>Offers:</strong> {item.offers}
                 </p>
 
-                {/* Conditional rendering for AIO-specific fields */}
+                {/* Conditional rendering for each category */}
+                {category === "processors" && (
+                  <>
+                    <p>
+                      <strong>Model:</strong> {item.model}
+                    </p>
+                    <p>
+                      <strong>Chipset:</strong> {item.chipset}
+                    </p>
+                    <p>
+                      <strong>Socket:</strong> {item.socket}
+                    </p>
+                    <p>
+                      <strong>Max TDP:</strong> {item.maxtdp}
+                    </p>
+                  </>
+                )}
+
+                {category === "motherboard" && (
+                  <>
+                    <p>
+                      <strong>Chipset:</strong> {item.chipset}
+                    </p>
+                    <p>
+                      <strong>Socket:</strong> {item.socket}
+                    </p>
+                    <p>
+                      <strong>Form Factor:</strong> {item.formfactor}
+                    </p>
+                    <p>
+                      <strong>DDR Type:</strong> {item.ddrtype}
+                    </p>
+                    <p>
+                      <strong>RAM Slots:</strong> {item.ramslot}
+                    </p>
+                    <p>
+                      <strong>PCIe Gen:</strong> {item.pciegen}
+                    </p>
+                    <p>
+                      <strong>Color:</strong> {item.color}
+                    </p>
+                    <p>
+                      <strong>SSD Interface:</strong> {item.ssdinterface}
+                    </p>
+                  </>
+                )}
+
+                {category === "gpu" && (
+                  <>
+                    <p>
+                      <strong>Vendor:</strong> {item.vendor}
+                    </p>
+                    <p>
+                      <strong>Series:</strong> {item.series}
+                    </p>
+                    <p>
+                      <strong>Memory:</strong> {item.memory}
+                    </p>
+                    <p>
+                      <strong>Max TDP:</strong> {item.maxtdp}
+                    </p>
+                    <p>
+                      <strong>Connector:</strong> {item.connector}
+                    </p>
+                    <p>
+                      <strong>GPU Length:</strong> {item.gpulen}
+                    </p>
+                    <p>
+                      <strong>Color:</strong> {item.color}
+                    </p>
+                  </>
+                )}
+
+                {category === "ram" && (
+                  <>
+                    <p>
+                      <strong>Model:</strong> {item.model}
+                    </p>
+                    <p>
+                      <strong>DDR Type:</strong> {item.ddrtype}
+                    </p>
+                    <p>
+                      <strong>Capacity:</strong> {item.capacity}
+                    </p>
+                    <p>
+                      <strong>Sticks:</strong> {item.sticks}
+                    </p>
+                    <p>
+                      <strong>Color:</strong> {item.color}
+                    </p>
+                  </>
+                )}
+
+                {category === "psu" && (
+                  <>
+                    <p>
+                      <strong>Watt:</strong> {item.watt}
+                    </p>
+                    <p>
+                      <strong>Rating:</strong> {item.rating}
+                    </p>
+                    <p>
+                      <strong>Connector:</strong> {item.connector}
+                    </p>
+                    <p>
+                      <strong>Color:</strong> {item.color}
+                    </p>
+                  </>
+                )}
+
                 {category === "aio" && (
                   <>
                     <p>
@@ -120,7 +229,6 @@ const ProductPage = () => {
                   </>
                 )}
 
-                {/* Conditional rendering for Cabinet-specific fields */}
                 {category === "cabinet" && (
                   <>
                     <p>
@@ -142,7 +250,6 @@ const ProductPage = () => {
                   </>
                 )}
 
-                {/* Conditional rendering for SSD-specific fields */}
                 {category === "ssd" && (
                   <>
                     <p>

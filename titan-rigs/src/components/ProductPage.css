@@ -1,37 +1,60 @@
+/* Main container for the product page */
 .product-page {
   padding: 20px;
-  max-width: 1200px;
+  max-width: 1000px; /* Adjust this to limit the container width */
   margin: 0 auto;
 }
 
+/* Container for the product details */
 .product-details-container {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  width: 100%; /* Make sure it fills the available space */
+  margin: 0 auto;
 }
 
+/* Title for the product */
 .product-title {
   font-size: 2rem;
   font-weight: bold;
+  text-align: center;
 }
 
+/* Container for product details (image + info) */
 .product-details {
   display: flex;
   gap: 40px;
   align-items: flex-start;
+  flex-wrap: wrap; /* Allow content to wrap to the next line if needed */
 }
 
+/* Grid layout for product images */
+.product-image-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Two columns */
+  gap: 20px; /* Increased space between images */
+  max-width: 1000px; /* Increased max-width for image container */
+  margin: 0 auto; /* Centering the image grid */
+}
+
+/* Adjusting image size to make them larger and more visible */
 .product-image-container img {
-  max-width: 400px;
+  width: 100%; /* Make images take full width of each column */
+  height: auto;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  object-fit: contain; /* Ensure the images scale properly without distortion */
+  max-height: 500px; /* Increase max height for the images to make them larger */
 }
 
+/* Product info container */
 .product-info-container p {
   font-size: 1.1rem;
   margin: 8px 0;
 }
 
+/* Loading and error messages */
 .product-page-loading,
 .product-page-error {
   font-size: 1.5rem;
