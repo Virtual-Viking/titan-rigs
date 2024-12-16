@@ -8,6 +8,7 @@ import ProductGrid from "./components/ProductGrid";
 import ProductPage from "./components/ProductPage";
 import CategoryPage from "./components/CategoryPage";
 import RigBuilder from "./components/RigBuilder";
+
 const App = () => {
   const [category, setCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
