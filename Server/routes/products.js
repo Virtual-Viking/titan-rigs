@@ -241,7 +241,7 @@ router.get("/processors/:brand", async (req, res) => {
     `;
 
     const [rows] = await db.execute(query, [brand]);
-
+2
     if (rows.length === 0) {
       return res
         .status(404)
