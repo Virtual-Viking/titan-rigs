@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { CartContext } from "../context/CartContext"; // Import CartContext
 import "./CategoryPage.css";
+import addtocart from "../assets/add-to-cart.svg"; // Import the add-to-cart icon
 
 const CategoryPage = () => {
   const { categoryName } = useParams();
   const navigate = useNavigate();
+  const { addToCart } = useContext(CartContext); // Access the addToCart function from CartContext
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -44,6 +47,12 @@ const CategoryPage = () => {
     fetchCategoryProducts();
   }, [categoryName]);
 
+  const handleAddToCart = (e, product) => {
+    e.stopPropagation(); // Prevent the click event from bubbling up to the parent div
+    addToCart(product); // Add the product to the cart
+    navigate("/add-to-cart"); // Redirect to AddToCartPage
+  };
+
   if (loading) {
     return <div>Loading products...</div>;
   }
@@ -51,7 +60,7 @@ const CategoryPage = () => {
   return (
     <div className="category-page">
       <h1>{categoryName.toUpperCase()}</h1>
-      <div className="product-grid">
+      <div className="products-grid">
         {products.length > 0 ? (
           products.map((product) => (
             <div
@@ -75,6 +84,14 @@ const CategoryPage = () => {
                 <p>Brand: {product.brand}</p>
                 <p>Price: ${product.price}</p>
                 <p>Stock: {product.qty}</p>
+              </div>
+
+              {/* Add to Cart Button */}
+              <div
+                className="add-to-cart"
+                onClick={(e) => handleAddToCart(e, product)} // Call handleAddToCart on button click
+              >
+                <img src={addtocart} alt="Add to cart" />
               </div>
             </div>
           ))

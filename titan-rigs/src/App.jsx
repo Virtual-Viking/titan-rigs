@@ -9,7 +9,8 @@ import ProductPage from "./components/productPage";
 import CategoryPage from "./components/CategoryPage";
 import RigBuilder from "./components/RigBuilder";
 import AddToCartPage from "./components/AddToCartPage";
-import { CartProvider } from "./context/CartContext"; // Import CartProvider
+import { CartProvider } from "./context/CartContext";
+import CheckoutPage from "./components/CheckoutPage";
 
 const App = () => {
   const [category, setCategory] = useState(null);
@@ -51,6 +52,9 @@ const App = () => {
 
             {/* Route for AddToCartPage */}
             <Route path="/add-to-cart" element={<AddToCartPage />} />
+
+            {/* Route for CheckoutPage */}
+            <Route path="/checkout" element={<CheckoutPage />} />
           </Routes>
           <Footer />
         </div>

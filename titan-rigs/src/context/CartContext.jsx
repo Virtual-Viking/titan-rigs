@@ -1,4 +1,3 @@
-// src/context/CartContext.jsx
 import React, { createContext, useState } from "react";
 
 // CartContext setup
@@ -9,14 +8,20 @@ export const CartProvider = ({ children }) => {
 
   const addToCart = (product) => {
     setCart((prevCart) => {
-      const existingProduct = prevCart.find((item) => item.id === product.id);
+      // Check if a product with the same 'name' and 'model' already exists in the cart
+      const existingProduct = prevCart.find(
+        (item) => item.name === product.name && item.model === product.model
+      );
+
       if (existingProduct) {
+        // If product exists, increment its quantity
         return prevCart.map((item) =>
-          item.id === product.id
+          item.name === product.name && item.model === product.model
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       } else {
+        // If product does not exist, add it to the cart with a quantity of 1
         return [...prevCart, { ...product, quantity: 1 }];
       }
     });

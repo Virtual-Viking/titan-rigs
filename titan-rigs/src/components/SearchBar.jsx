@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import "./searchbar.css";
 import { Link } from "react-router-dom";
 import cartIcon from "/src/assets/shopping-cart.svg"; // Cart icon
 import logo from "/src/assets/logo.svg"; // Replace with your logo path
 import Lottie from "lottie-react"; // Import Lottie for animation
 import searchAnimation from "/src/assets/search.json"; // Animated search icon
+import { CartContext } from "../context/CartContext"; // Import CartContext
 
 const Searchbar = () => {
-  const [cartItems, setCartItems] = useState(0); // Number of items in cart
-  const [totalPrice, setTotalPrice] = useState(0.0); // Total cart price
+  const { cart } = useContext(CartContext); // Access the cart from the CartContext
   const [selectedCategory, setSelectedCategory] = useState("All Categories"); // Default category
   const categories = [
     "All Categories",
@@ -17,6 +17,15 @@ const Searchbar = () => {
     "Home",
     "Books",
   ];
+
+  // Calculate total number of items in the cart
+  const cartItems = cart.reduce((total, item) => total + item.quantity, 0);
+
+  // Calculate total price of the items in the cart
+  const totalPrice = cart.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
 
   return (
     <div className="searchbar-container">

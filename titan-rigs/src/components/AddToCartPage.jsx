@@ -1,12 +1,20 @@
 import React, { useContext } from "react";
 import { CartContext } from "../context/CartContext"; // Import CartContext
+import { useNavigate } from "react-router-dom"; // Import useNavigate hook for navigation
 import "./AddToCartPage.css";
 
 const AddToCartPage = () => {
   const { cart, removeFromCart } = useContext(CartContext); // Access cart and removeFromCart function
+  const navigate = useNavigate(); // Get the navigate function
 
+  // Calculate the total price of the cart items
   const calculateTotalPrice = () =>
     cart.reduce((total, item) => total + item.price * item.quantity, 0);
+
+  // Function to handle checkout navigation
+  const handleCheckout = () => {
+    navigate("/checkout"); // Navigate to the CheckoutPage
+  };
 
   return (
     <div className="cart-page">
@@ -39,7 +47,9 @@ const AddToCartPage = () => {
           </div>
           <div className="cart-summary">
             <h2>Total Price: ${calculateTotalPrice().toFixed(2)}</h2>
-            <button className="checkout-button">Proceed to Checkout</button>
+            <button className="checkout-button" onClick={handleCheckout}>
+              Proceed to Checkout
+            </button>
           </div>
         </div>
       )}
