@@ -56,6 +56,14 @@
   box-shadow: 0 3px 5px rgba(0, 123, 255, 0.2); /* Add hover shadow */
 }
 
+/* Active category style */
+.department-list li.active-category {
+  background-color: #007bff; /* Same as hover */
+  color: white; /* White text */
+  font-weight: bold; /* Optionally, make active category bold */
+  box-shadow: 0 3px 5px rgba(0, 123, 255, 0.2); /* Add shadow effect */
+}
+
 /* Image Slider */
 .slider {
   position: relative;
@@ -64,8 +72,6 @@
   margin-left: 250px;
   z-index: 1;
 }
-
-
 
 .slider-image {
   width: auto;
