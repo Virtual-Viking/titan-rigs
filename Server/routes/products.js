@@ -607,6 +607,34 @@ router.get("/search", async (req, res) => {
       "p.offers",
       "p.socket", // AIO socket type (JSON)
     ];
+  } else if (category === "cabinet") {
+    selectFields = [
+      "p.id",
+      "p.name",
+      "p.price",
+      "p.brand",
+      "p.qty",
+      "p.formfactor",
+      "p.cabinetcol",
+      "p.gpulen",
+      "p.radiatorlen",
+      "p.color",
+      "p.release_date",
+      "p.offers",
+    ];
+  } else if (category === "ssd") {
+    selectFields = [
+      "p.id",
+      "p.name",
+      "p.price",
+      "p.brand",
+      "p.qty",
+      "p.pciegen",
+      "p.interface",
+      "p.capacity",
+      "p.release_date",
+      "p.offers",
+    ];
   } else {
     return res.status(400).json({ error: "Invalid category" });
   }
@@ -645,7 +673,7 @@ router.get("/search", async (req, res) => {
         };
 
         // Add category-specific fields dynamically
-        if (category === "processor") {
+        if (category === "processors") {
           acc[row.id].model = row.model;
           acc[row.id].chipset = row.chipset;
           acc[row.id].socket = row.socket;
@@ -684,6 +712,16 @@ router.get("/search", async (req, res) => {
           acc[row.id].len = row.len;
           acc[row.id].color = row.color;
           acc[row.id].socket = row.socket; // Store socket JSON as it is
+        } else if (category === "cabinet") {
+          acc[row.id].formfactor = row.formfactor;
+          acc[row.id].cabinetcol = row.cabinetcol;
+          acc[row.id].gpulen = row.gpulen;
+          acc[row.id].radiatorlen = row.radiatorlen;
+          acc[row.id].color = row.color;
+        } else if (category === "ssd") {
+          acc[row.id].pciegen = row.pciegen;
+          acc[row.id].interface = row.interface;
+          acc[row.id].capacity = row.capacity;
         }
       }
 

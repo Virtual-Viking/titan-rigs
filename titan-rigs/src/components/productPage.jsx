@@ -119,6 +119,43 @@ const ProductPage = () => {
                     </p>
                   </>
                 )}
+
+                {/* Conditional rendering for Cabinet-specific fields */}
+                {category === "cabinet" && (
+                  <>
+                    <p>
+                      <strong>Form Factor:</strong> {item.formfactor}
+                    </p>
+                    <p>
+                      <strong>Cabinet Color:</strong> {item.cabinetcol}
+                    </p>
+                    <p>
+                      <strong>GPU Length:</strong> {item.gpulen || "N/A"}
+                    </p>
+                    <p>
+                      <strong>Radiator Length:</strong>{" "}
+                      {item.radiatorlen || "N/A"}
+                    </p>
+                    <p>
+                      <strong>Color:</strong> {item.color}
+                    </p>
+                  </>
+                )}
+
+                {/* Conditional rendering for SSD-specific fields */}
+                {category === "ssd" && (
+                  <>
+                    <p>
+                      <strong>PCIe Gen:</strong> {item.pciegen}
+                    </p>
+                    <p>
+                      <strong>Interface:</strong> {item.interface}
+                    </p>
+                    <p>
+                      <strong>Capacity:</strong> {item.capacity}
+                    </p>
+                  </>
+                )}
               </div>
             </div>
           </div>
