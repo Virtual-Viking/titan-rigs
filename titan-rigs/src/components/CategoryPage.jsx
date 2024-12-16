@@ -25,7 +25,8 @@ const CategoryPage = () => {
               const imageData = await imageResponse.json();
               return {
                 ...product,
-                image_url: imageData.image_url || "default-image-placeholder.png",
+                image_url:
+                  imageData.image_url || "default-image-placeholder.png",
               };
             })
           );
@@ -53,7 +54,33 @@ const CategoryPage = () => {
       <div className="product-grid">
         {products.length > 0 ? (
           products.map((product) => (
+<<<<<<< HEAD
             <ProductCard key={`${product.category}-${product.id}`} product={product} />
+=======
+            <div
+              key={product.id}
+              className="product-card"
+              onClick={() =>
+                navigate(
+                  `/product?name=${encodeURIComponent(
+                    product.name
+                  )}&category=${encodeURIComponent(categoryName)}`
+                )
+              }
+            >
+              <img
+                src={product.image_url}
+                alt={product.name}
+                className="product-image"
+              />
+              <div className="product-info">
+                <h3>{product.name}</h3>
+                <p>Brand: {product.brand}</p>
+                <p>Price: ${product.price}</p>
+                <p>Stock: {product.qty}</p>
+              </div>
+            </div>
+>>>>>>> 3acad0f3839c691da4c70c563255ccb9cf22d834
           ))
         ) : (
           <p>No products found in this category.</p>

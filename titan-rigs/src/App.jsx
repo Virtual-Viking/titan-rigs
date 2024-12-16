@@ -37,7 +37,7 @@ const App = () => {
           />
 
           {/* Route for specific product details */}
-          <Route path="/product/:id" element={<ProductPage />} />
+          <Route path="/product" element={<ProductPage />} />
 
           {/* Route for specific category */}
           <Route path="/category/:categoryName" element={<CategoryPage />} />
