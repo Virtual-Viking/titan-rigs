@@ -492,3 +492,14 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2024-12-14 19:59:13
+
+
+CREATE TABLE `orders` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `total_price` decimal(10,2) NOT NULL,
+  `order_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` enum('pending', 'shipped', 'delivered', 'cancelled') DEFAULT 'pending',
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

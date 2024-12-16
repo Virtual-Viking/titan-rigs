@@ -126,8 +126,8 @@ router.get("/", async (req, res) => {
   }
 
   try {
-    console.log("SQL Query:", query);
-    console.log("This is called................");
+    // console.log("SQL Query:", query);
+    // console.log("This is called................");
     const [rows] = await db.execute(query);
     res.json({ products: rows });
   } catch (err) {
@@ -442,69 +442,6 @@ router.get("/cabinets/:aioLen", async (req, res) => {
   }
 });
 
-// router.get("/search", async (req, res) => {
-//   const { name, category } = req.query;
-
-//   if (!name || !category) {
-//     return res
-//       .status(400)
-//       .json({ error: "Both name and category are required" });
-//   }
-
-//   // Create the base query for searching in the specific category table
-//   let query = `
-//     SELECT p.id, p.name, p.price, p.brand, p.qty, p.model, p.chipset, p.socket,
-//            p.maxtdp, p.release_date, p.offers, pi.image_url
-//     FROM ${mysql.escapeId(category)} p
-//     LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.product_type = ?
-//     WHERE p.name LIKE ? OR p.brand LIKE ?
-//   `;
-
-//   try {
-//     const [rows] = await db.execute(query, [
-//       category,
-//       `%${name}%`,
-//       `%${name}%`,
-//     ]);
-
-//     if (rows.length === 0) {
-//       return res.status(404).json({ message: "No products found" });
-//     }
-
-//     // Group the results by product id and aggregate the images into an array
-//     const productsMap = rows.reduce((acc, row) => {
-//       if (!acc[row.id]) {
-//         acc[row.id] = {
-//           id: row.id,
-//           name: row.name,
-//           price: row.price,
-//           brand: row.brand,
-//           qty: row.qty,
-//           model: row.model,
-//           chipset: row.chipset,
-//           socket: row.socket,
-//           maxtdp: row.maxtdp,
-//           release_date: row.release_date,
-//           offers: row.offers,
-//           images: [],
-//         };
-//       }
-//       if (row.image_url) {
-//         acc[row.id].images.push({ image_url: row.image_url });
-//       }
-//       return acc;
-//     }, {});
-
-//     // Convert the productsMap to an array
-//     const products = Object.values(productsMap);
-
-//     res.json({ products });
-//   } catch (err) {
-//     console.error("Error fetching products:", err.message);
-//     res.status(500).json({ error: "Server error" });
-//   }
-// });
-
 router.get("/search", async (req, res) => {
   const { name, category } = req.query;
 
@@ -740,6 +677,55 @@ router.get("/search", async (req, res) => {
   } catch (err) {
     console.error("Error fetching products:", err.message);
     res.status(500).json({ error: "Server error" });
+  }
+});
+
+// POST route to create an order
+router.post("/orders", async (req, res) => {
+  const { user_id, total_price } = req.body;
+
+  // Validate incoming request body
+  if (!user_id || !total_price) {
+    return res.status(400).json({ error: "Invalid data provided" });
+  }
+
+  console.log("Request body:", req.body);
+
+  try {
+    // Insert the main order into the orders table
+    const query = `
+      INSERT INTO orders (user_id, total_price)
+      VALUES (?, ?);
+    `;
+
+    console.log("Inserting order:", user_id, total_price);
+
+    const [orderResult] = await db.execute(query, [user_id, total_price]);
+
+    // If order insertion fails
+    if (!orderResult || !orderResult.insertId) {
+      return res
+        .status(500)
+        .json({ error: "Failed to insert order into orders table" });
+    }
+
+    console.log("Order inserted:", orderResult);
+
+    // Get the order ID of the newly inserted order
+    const orderId = orderResult.insertId;
+
+    // Respond with success, including the created order ID
+    res.status(201).json({
+      message: "Order placed successfully",
+      orderId: orderId,
+      status: "pending", // Default status
+      order_date: new Date().toISOString(), // Timestamp of when the order was created
+    });
+  } catch (err) {
+    console.error("Error placing order:", err.message);
+    res
+      .status(500)
+      .json({ error: "Failed to place the order", message: err.message });
   }
 });
 
