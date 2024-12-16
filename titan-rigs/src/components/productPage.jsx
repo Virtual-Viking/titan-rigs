@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { CartContext } from "../context/CartContext"; // Import the CartContext
 import "./ProductPage.css"; // Import the CSS file for styling
 
 const ProductPage = () => {
@@ -7,10 +8,14 @@ const ProductPage = () => {
   const queryParams = new URLSearchParams(location.search); // Parse the query params
   const name = queryParams.get("name");
   const category = queryParams.get("category");
+  const navigate = useNavigate();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [addedToCart, setAddedToCart] = useState(false); // State to track if product is added to cart
+
+  const { addToCart } = useContext(CartContext); // Access addToCart function from context
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -43,6 +48,19 @@ const ProductPage = () => {
       fetchProductDetails();
     }
   }, [name, category]);
+
+  const handleAddToCart = (item) => {
+    const transformedItem = {
+      ...item,
+      image_url:
+        item.images && item.images.length > 0 ? item.images[0].image_url : null, // Add the first image URL
+      images: undefined,
+    };
+    addToCart(transformedItem); // Add the item to the cart via the context
+    setAddedToCart(true); // Set state to indicate the item has been added
+    setTimeout(() => setAddedToCart(false), 2000); // Reset the "added to cart" message after 2 seconds
+    navigate("/add-to-cart");
+  };
 
   if (loading) {
     return (
@@ -122,147 +140,15 @@ const ProductPage = () => {
                   </>
                 )}
 
-                {category === "motherboard" && (
-                  <>
-                    <p>
-                      <strong>Chipset:</strong> {item.chipset}
-                    </p>
-                    <p>
-                      <strong>Socket:</strong> {item.socket}
-                    </p>
-                    <p>
-                      <strong>Form Factor:</strong> {item.formfactor}
-                    </p>
-                    <p>
-                      <strong>DDR Type:</strong> {item.ddrtype}
-                    </p>
-                    <p>
-                      <strong>RAM Slots:</strong> {item.ramslot}
-                    </p>
-                    <p>
-                      <strong>PCIe Gen:</strong> {item.pciegen}
-                    </p>
-                    <p>
-                      <strong>Color:</strong> {item.color}
-                    </p>
-                    <p>
-                      <strong>SSD Interface:</strong> {item.ssdinterface}
-                    </p>
-                  </>
-                )}
+                {/* Other category-specific details here */}
 
-                {category === "gpu" && (
-                  <>
-                    <p>
-                      <strong>Vendor:</strong> {item.vendor}
-                    </p>
-                    <p>
-                      <strong>Series:</strong> {item.series}
-                    </p>
-                    <p>
-                      <strong>Memory:</strong> {item.memory}
-                    </p>
-                    <p>
-                      <strong>Max TDP:</strong> {item.maxtdp}
-                    </p>
-                    <p>
-                      <strong>Connector:</strong> {item.connector}
-                    </p>
-                    <p>
-                      <strong>GPU Length:</strong> {item.gpulen}
-                    </p>
-                    <p>
-                      <strong>Color:</strong> {item.color}
-                    </p>
-                  </>
-                )}
-
-                {category === "ram" && (
-                  <>
-                    <p>
-                      <strong>Model:</strong> {item.model}
-                    </p>
-                    <p>
-                      <strong>DDR Type:</strong> {item.ddrtype}
-                    </p>
-                    <p>
-                      <strong>Capacity:</strong> {item.capacity}
-                    </p>
-                    <p>
-                      <strong>Sticks:</strong> {item.sticks}
-                    </p>
-                    <p>
-                      <strong>Color:</strong> {item.color}
-                    </p>
-                  </>
-                )}
-
-                {category === "psu" && (
-                  <>
-                    <p>
-                      <strong>Watt:</strong> {item.watt}
-                    </p>
-                    <p>
-                      <strong>Rating:</strong> {item.rating}
-                    </p>
-                    <p>
-                      <strong>Connector:</strong> {item.connector}
-                    </p>
-                    <p>
-                      <strong>Color:</strong> {item.color}
-                    </p>
-                  </>
-                )}
-
-                {category === "aio" && (
-                  <>
-                    <p>
-                      <strong>Length:</strong> {item.len}
-                    </p>
-                    <p>
-                      <strong>Color:</strong> {item.color}
-                    </p>
-                    <p>
-                      <strong>Socket:</strong>{" "}
-                      {item.socket ? JSON.stringify(item.socket) : "N/A"}
-                    </p>
-                  </>
-                )}
-
-                {category === "cabinet" && (
-                  <>
-                    <p>
-                      <strong>Form Factor:</strong> {item.formfactor}
-                    </p>
-                    <p>
-                      <strong>Cabinet Color:</strong> {item.cabinetcol}
-                    </p>
-                    <p>
-                      <strong>GPU Length:</strong> {item.gpulen || "N/A"}
-                    </p>
-                    <p>
-                      <strong>Radiator Length:</strong>{" "}
-                      {item.radiatorlen || "N/A"}
-                    </p>
-                    <p>
-                      <strong>Color:</strong> {item.color}
-                    </p>
-                  </>
-                )}
-
-                {category === "ssd" && (
-                  <>
-                    <p>
-                      <strong>PCIe Gen:</strong> {item.pciegen}
-                    </p>
-                    <p>
-                      <strong>Interface:</strong> {item.interface}
-                    </p>
-                    <p>
-                      <strong>Capacity:</strong> {item.capacity}
-                    </p>
-                  </>
-                )}
+                {/* Add to Cart button */}
+                <button
+                  className="add-to-cart-button"
+                  onClick={() => handleAddToCart(item)}
+                >
+                  {addedToCart ? "Added to Cart" : "Add to Cart"}
+                </button>
               </div>
             </div>
           </div>

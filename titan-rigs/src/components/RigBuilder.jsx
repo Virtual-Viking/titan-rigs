@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import "./RigBuilder.css";
 import { CartContext } from "../context/CartContext";
+import { useNavigate } from "react-router-dom";
 
 const RigBuilder = () => {
   const { addToCart } = useContext(CartContext);
+  const navigate = useNavigate();
   const [selectedBrand, setSelectedBrand] = useState("Intel");
   const [processors, setProcessors] = useState([]);
   const [selectedProcessor, setSelectedProcessor] = useState(null);
@@ -386,6 +388,7 @@ const RigBuilder = () => {
       ];
 
       addToCart(rig); // Add the rig configuration to the cart
+      navigate("/add-to-cart");
     } else {
       alert("Please select all components before adding to the cart.");
     }

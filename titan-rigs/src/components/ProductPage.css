@@ -61,3 +61,47 @@
   color: #ff0000;
   text-align: center;
 }
+
+/* Add to Cart button styling */
+.add-to-cart-button {
+  background-color: #28a745; /* Green color for normal state */
+  color: white;
+  font-size: 1rem;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  font-weight: bold;
+  width: 200px; /* Set a fixed width for the button */
+  text-align: center;
+  display: block;
+  margin-top: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Hover effect */
+.add-to-cart-button:hover {
+  background-color: #218838; /* Darker green when hovering */
+  transform: scale(1.05); /* Slightly increase the size on hover */
+}
+
+/* Success message for added to cart */
+.add-to-cart-success {
+  background-color: #ffc107; /* Yellow background for success message */
+  color: #212529;
+  font-size: 1rem;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-align: center;
+  width: 200px;
+  margin-top: 20px;
+  display: block;
+  margin: 20px auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.add-to-cart-success p {
+  margin: 0;
+}

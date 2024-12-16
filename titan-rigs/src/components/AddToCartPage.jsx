@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate hook for n
 import "./AddToCartPage.css";
 
 const AddToCartPage = () => {
-  const { cart, removeFromCart } = useContext(CartContext); // Access cart and removeFromCart function
+  const { cart, removeFromCart, clearCart } = useContext(CartContext); // Access cart, removeFromCart, and clearCart function
   const navigate = useNavigate(); // Get the navigate function
 
   // Calculate the total price of the cart items
@@ -53,6 +53,12 @@ const AddToCartPage = () => {
           </div>
         </div>
       )}
+      {/* Button to remove all items from the cart */}
+      <div className="remove-all-container">
+        <button className="remove-all-button" onClick={clearCart}>
+          Remove All Items
+        </button>
+      </div>
     </div>
   );
 };

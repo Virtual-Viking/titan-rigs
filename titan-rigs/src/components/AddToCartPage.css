@@ -1,88 +1,121 @@
 .cart-page {
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  
-  h1 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .empty-cart {
-    text-align: center;
-    font-size: 1.2rem;
-    color: gray;
-  }
-  
-  .cart-items {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .cart-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border: 1px solid #ddd;
-    padding: 10px;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-  }
-  
-  .cart-item-image {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 5px;
-  }
-  
-  .cart-item-details {
-    flex: 1;
-    margin-left: 20px;
-  }
-  
-  .cart-item-details h3 {
-    margin: 0;
-    font-size: 1.2rem;
-  }
-  
-  .cart-item-details p {
-    margin: 5px 0;
-    font-size: 0.9rem;
-  }
-  
-  .remove-item-button {
-    background-color: #ff4d4d;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .remove-item-button:hover {
-    background-color: #ff1a1a;
-  }
-  
-  .cart-summary {
-    margin-top: 20px;
-    text-align: right;
-  }
-  
-  .checkout-button {
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-  }
-  
-  .checkout-button:hover {
-    background-color: #45a049;
-  }
-  
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.empty-cart {
+  text-align: center;
+  font-size: 1.2rem;
+  color: gray;
+}
+
+.cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.cart-item-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.cart-item-details {
+  flex: 1;
+  margin-left: 20px;
+}
+
+.cart-item-details h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.cart-item-details p {
+  margin: 5px 0;
+  font-size: 0.9rem;
+}
+
+.remove-item-button {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.remove-item-button:hover {
+  background-color: #ff1a1a;
+}
+
+.cart-summary {
+  margin-top: 20px;
+  text-align: right;
+}
+
+.checkout-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.checkout-button:hover {
+  background-color: #45a049;
+}
+
+/* New styles for "Remove All Items from Cart" button */
+.remove-all-container {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.remove-all-button {
+  padding: 12px 24px;
+  background-color: #ff6347; /* Tomato Red */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: bold;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.remove-all-button:hover {
+  background-color: #e04e39; /* Darker red */
+  transform: scale(1.05); /* Slightly enlarges the button on hover */
+}
+
+.remove-all-button:active {
+  transform: scale(0.98); /* Slightly shrink the button when clicked */
+}
+
+.remove-all-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 99, 71, 0.5); /* Light red focus ring */
+}
