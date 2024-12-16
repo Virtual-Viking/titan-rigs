@@ -126,12 +126,12 @@ router.get("/", async (req, res) => {
   }
 
   try {
-    // console.log("SQL Query:", query);
-
+    console.log("SQL Query:", query);
+    console.log("This is called................");
     const [rows] = await db.execute(query);
     res.json({ products: rows });
   } catch (err) {
-    // console.error("SQL Query Error:", err.message);
+    console.error("SQL Query Error:", err.message);
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -439,6 +439,192 @@ router.get("/cabinets/:aioLen", async (req, res) => {
     // Log the error and send a 500 response if an exception occurs
     console.error("Error fetching cabinets:", err.message);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// router.get("/search", async (req, res) => {
+//   const { name, category } = req.query;
+
+//   if (!name || !category) {
+//     return res
+//       .status(400)
+//       .json({ error: "Both name and category are required" });
+//   }
+
+//   // Create the base query for searching in the specific category table
+//   let query = `
+//     SELECT p.id, p.name, p.price, p.brand, p.qty, p.model, p.chipset, p.socket,
+//            p.maxtdp, p.release_date, p.offers, pi.image_url
+//     FROM ${mysql.escapeId(category)} p
+//     LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.product_type = ?
+//     WHERE p.name LIKE ? OR p.brand LIKE ?
+//   `;
+
+//   try {
+//     const [rows] = await db.execute(query, [
+//       category,
+//       `%${name}%`,
+//       `%${name}%`,
+//     ]);
+
+//     if (rows.length === 0) {
+//       return res.status(404).json({ message: "No products found" });
+//     }
+
+//     // Group the results by product id and aggregate the images into an array
+//     const productsMap = rows.reduce((acc, row) => {
+//       if (!acc[row.id]) {
+//         acc[row.id] = {
+//           id: row.id,
+//           name: row.name,
+//           price: row.price,
+//           brand: row.brand,
+//           qty: row.qty,
+//           model: row.model,
+//           chipset: row.chipset,
+//           socket: row.socket,
+//           maxtdp: row.maxtdp,
+//           release_date: row.release_date,
+//           offers: row.offers,
+//           images: [],
+//         };
+//       }
+//       if (row.image_url) {
+//         acc[row.id].images.push({ image_url: row.image_url });
+//       }
+//       return acc;
+//     }, {});
+
+//     // Convert the productsMap to an array
+//     const products = Object.values(productsMap);
+
+//     res.json({ products });
+//   } catch (err) {
+//     console.error("Error fetching products:", err.message);
+//     res.status(500).json({ error: "Server error" });
+//   }
+// });
+
+router.get("/search", async (req, res) => {
+  const { name, category } = req.query;
+
+  if (!name || !category) {
+    return res
+      .status(400)
+      .json({ error: "Both name and category are required" });
+  }
+
+  // Define the fields to select based on category
+  let selectFields = [];
+  if (category === "processors") {
+    selectFields = [
+      "p.id",
+      "p.name",
+      "p.price",
+      "p.brand",
+      "p.qty",
+      "p.model",
+      "p.chipset",
+      "p.socket",
+      "p.maxtdp",
+      "p.release_date",
+      "p.offers",
+    ];
+  } else if (category === "motherboard") {
+    selectFields = [
+      "p.id",
+      "p.name",
+      "p.price",
+      "p.brand",
+      "p.qty",
+      "p.chipset",
+      "p.socket",
+      "p.formfactor",
+      "p.ddrtype",
+      "p.ramslot",
+      "p.pciegen",
+      "p.color",
+      "p.ssdinterface",
+      "p.release_date",
+      "p.offers",
+    ];
+  } else {
+    return res.status(400).json({ error: "Invalid category" });
+  }
+
+  // Create the base query for searching in the specific category table
+  let query = `
+    SELECT ${selectFields.join(", ")}, pi.image_url
+    FROM ${mysql.escapeId(category)} p
+    LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.product_type = ?
+    WHERE p.name LIKE ? OR p.brand LIKE ?
+  `;
+
+  console.log("Generated Query:", query); // Log the query for debugging
+
+  try {
+    const [rows] = await db.execute(query, [
+      category,
+      `%${name}%`,
+      `%${name}%`,
+    ]);
+
+    // Log the rows to inspect data
+    console.log("Fetched Rows:", rows);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "No products found" });
+    }
+
+    // Group the results by product id and aggregate the images into an array
+    const productsMap = rows.reduce((acc, row) => {
+      if (!acc[row.id]) {
+        acc[row.id] = {
+          id: row.id,
+          name: row.name,
+          price: row.price,
+          brand: row.brand,
+          qty: row.qty,
+          release_date: row.release_date,
+          offers: row.offers,
+          images: [],
+        };
+
+        // Add category-specific fields dynamically
+        if (category === "processor") {
+          acc[row.id].model = row.model;
+          acc[row.id].chipset = row.chipset;
+          acc[row.id].socket = row.socket;
+          acc[row.id].maxtdp = row.maxtdp;
+        } else if (category === "motherboard") {
+          acc[row.id].chipset = row.chipset;
+          acc[row.id].socket = row.socket;
+          acc[row.id].formfactor = row.formfactor;
+          acc[row.id].ddrtype = row.ddrtype;
+          acc[row.id].ramslot = row.ramslot;
+          acc[row.id].pciegen = row.pciegen;
+          acc[row.id].color = row.color;
+          acc[row.id].ssdinterface = row.ssdinterface
+            ? row.ssdinterface.split(",")
+            : []; // Handling 'set' type field correctly
+        }
+      }
+
+      // Add images to the product
+      if (row.image_url) {
+        acc[row.id].images.push({ image_url: row.image_url });
+      }
+
+      return acc;
+    }, {});
+
+    // Convert the productsMap to an array
+    const products = Object.values(productsMap);
+
+    res.json({ products });
+  } catch (err) {
+    console.error("Error fetching products:", err.message);
+    res.status(500).json({ error: "Server error" });
   }
 });
 

@@ -24,9 +24,13 @@ const ProductCard = ({ product }) => {
     fetchImage();
   }, [product.category, product.id]);
 
-  // Navigate to the ProductPage when the card is clicked
+  // Navigate to ProductPage with name and category in the query parameters
   const navigateToProductPage = () => {
-    navigate(`/product?name=${encodeURIComponent(product.name)}&category=${encodeURIComponent(product.category)}`);
+    navigate(
+      `/product?name=${encodeURIComponent(
+        product.name
+      )}&category=${encodeURIComponent(product.category)}`
+    );
   };
 
   return (

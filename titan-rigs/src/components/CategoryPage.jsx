@@ -25,7 +25,8 @@ const CategoryPage = () => {
               const imageData = await imageResponse.json();
               return {
                 ...product,
-                image_url: imageData.image_url || "default-image-placeholder.png",
+                image_url:
+                  imageData.image_url || "default-image-placeholder.png",
               };
             })
           );
@@ -56,9 +57,19 @@ const CategoryPage = () => {
             <div
               key={product.id}
               className="product-card"
-              onClick={() => navigate(`/product/${product.id}`)}
+              onClick={() =>
+                navigate(
+                  `/product?name=${encodeURIComponent(
+                    product.name
+                  )}&category=${encodeURIComponent(categoryName)}`
+                )
+              }
             >
-              <img src={product.image_url} alt={product.name} className="product-image" />
+              <img
+                src={product.image_url}
+                alt={product.name}
+                className="product-image"
+              />
               <div className="product-info">
                 <h3>{product.name}</h3>
                 <p>Brand: {product.brand}</p>
