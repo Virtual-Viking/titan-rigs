@@ -10,26 +10,28 @@ const RigBuilder = () => {
   const [ram, setRam] = useState([]);
   const [selectedRam, setSelectedRam] = useState(null);
   const [ssds, setSsds] = useState([]);
+  const [selectedSsd, setSelectedSsd] = useState(null); // SSD state
   const [gpus, setGpus] = useState([]);
+  const [selectedGpu, setSelectedGpu] = useState(null); // GPU state
   const [aios, setAios] = useState([]);
-  const [psus, setPsus] = useState([]); // PSU state
+  const [selectedAio, setSelectedAio] = useState(null); // AIO state
+  const [psus, setPsus] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [cabinets, setCabinets] = useState([]);
+  const [selectedCabinet, setSelectedCabinet] = useState(null);
 
   // Fetch processors based on selected brand
   const fetchProcessorsByBrand = async (brand) => {
     setLoading(true);
     setError("");
-
     try {
       const response = await fetch(
         `http://localhost:5000/api/products/processors/${brand.toLowerCase()}`
       );
-
       if (!response.ok) {
         throw new Error(`Failed to fetch processors: ${response.statusText}`);
       }
-
       const data = await response.json();
       setProcessors(data.processors);
     } catch (error) {
@@ -43,16 +45,13 @@ const RigBuilder = () => {
   const fetchMotherboardsByChipset = async (chipset) => {
     setLoading(true);
     setError("");
-
     try {
       const response = await fetch(
         `http://localhost:5000/api/products/motherboards/${chipset}`
       );
-
       if (!response.ok) {
         throw new Error(`Failed to fetch motherboards: ${response.statusText}`);
       }
-
       const data = await response.json();
       setMotherboards(data.motherboards);
     } catch (error) {
@@ -66,16 +65,13 @@ const RigBuilder = () => {
   const fetchRamByDdrType = async (ddrType) => {
     setLoading(true);
     setError("");
-
     try {
       const response = await fetch(
         `http://localhost:5000/api/products/ram/${ddrType}`
       );
-
       if (!response.ok) {
         throw new Error(`Failed to fetch RAM: ${response.statusText}`);
       }
-
       const data = await response.json();
       setRam(data.ram);
     } catch (error) {
@@ -90,11 +86,9 @@ const RigBuilder = () => {
     setError("");
     try {
       const response = await fetch("http://localhost:5000/api/products/ssds");
-
       if (!response.ok) {
         throw new Error(`Failed to fetch SSDs: ${response.statusText}`);
       }
-
       const data = await response.json();
       setSsds(data.ssds);
     } catch (error) {
@@ -110,11 +104,9 @@ const RigBuilder = () => {
     setError("");
     try {
       const response = await fetch("http://localhost:5000/api/products/gpus");
-
       if (!response.ok) {
         throw new Error(`Failed to fetch GPUs: ${response.statusText}`);
       }
-
       const data = await response.json();
       setGpus(data.gpus);
     } catch (error) {
@@ -124,17 +116,15 @@ const RigBuilder = () => {
     }
   };
 
-  // Fetch all AIOs after selecting SSD
+  // Fetch all AIOs after selecting GPU
   const fetchAllAios = async () => {
     setLoading(true);
     setError("");
     try {
       const response = await fetch("http://localhost:5000/api/products/aios");
-
       if (!response.ok) {
         throw new Error(`Failed to fetch Aios: ${response.statusText}`);
       }
-
       const data = await response.json();
       setAios(data.aios);
     } catch (error) {
@@ -144,7 +134,6 @@ const RigBuilder = () => {
     }
   };
 
-  // Fetch all PSUs after selecting AIO
   // Fetch PSUs based on max TDP (3x the maximum wattage)
   const fetchPsus = async (processorTdp) => {
     setLoading(true);
@@ -165,7 +154,41 @@ const RigBuilder = () => {
     }
   };
 
-  // Handle RAM selection
+  // Fetch cabinets based on selected AIO length
+  const fetchCabinetsByAioLength = async (aioLength) => {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/products/cabinets/${aioLength}`
+      );
+      if (!response.ok) {
+        throw new Error(`Failed to fetch cabinets: ${response.statusText}`);
+      }
+      const data = await response.json();
+      setCabinets(data.cabinets);
+    } catch (error) {
+      setError(`Error: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+  // Handle processor change
+  const handleProcessorChange = (e) => {
+    const processorId = e.target.value;
+    const processor = processors.find((p) => p.id === parseInt(processorId));
+    setSelectedProcessor(processor);
+  };
+  // Handle motherboard change
+  const handleMotherboardChange = (e) => {
+    const motherboardId = e.target.value;
+    const motherboard = motherboards.find(
+      (m) => m.id === parseInt(motherboardId)
+    );
+    setSelectedMotherboard(motherboard);
+    fetchRamByDdrType(motherboard.ddrtype);
+  };
+  // Handle RAM change
   const handleRamChange = (e) => {
     const selectedRamId = e.target.value;
     const selectedRam = ram.find((r) => r.id === parseInt(selectedRamId));
@@ -173,35 +196,31 @@ const RigBuilder = () => {
     fetchAllSsds();
   };
 
-  // Handle SSD selection
+  // Handle SSD change
   const handleSsdChange = (e) => {
     const selectedSsdId = e.target.value;
     const selectedSsd = ssds.find((s) => s.id === parseInt(selectedSsdId));
-    setSelectedRam(selectedSsd); // You can modify this based on your use case
-    fetchAllGpus(); // Fetch all GPUs after selecting SSD
+    setSelectedSsd(selectedSsd);
+    fetchAllGpus();
   };
 
-  // Handle GPU selection
+  // Handle GPU change
   const handleGpuChange = (e) => {
     const selectedGpuId = e.target.value;
     const selectedGpu = gpus.find((gpu) => gpu.id === parseInt(selectedGpuId));
-    setSelectedRam(selectedGpu); // You can modify this based on your use case
-    fetchAllAios(); // Fetch all AIOs after selecting GPU
+    setSelectedGpu(selectedGpu);
+    fetchAllAios();
   };
 
-  // Handle AIO selection
+  // Handle AIO change
   const handleAioChange = (e) => {
     const selectedAioId = e.target.value;
     const selectedAio = aios.find((aio) => aio.id === parseInt(selectedAioId));
-    setSelectedRam(selectedAio); // You can modify this based on your use case
-    fetchPsus(); // Fetch all PSUs after selecting AIO
-  };
-
-  // Handle processor change
-  const handleProcessorChange = (e) => {
-    const processorId = e.target.value;
-    const processor = processors.find((p) => p.id === parseInt(processorId));
-    setSelectedProcessor(processor);
+    setSelectedAio(selectedAio);
+    fetchPsus(selectedProcessor.maxtdp); // Assuming the processor TDP is needed
+    fetchCabinetsByAioLength(
+      parseInt(selectedAio.len.replace(/[^\d]/g, ""), 10)
+    );
   };
 
   // Fetch processors when the selected brand changes
@@ -217,17 +236,15 @@ const RigBuilder = () => {
     }
   }, [selectedProcessor]);
 
-  // Fetch RAM when a motherboard is selected
   useEffect(() => {
-    if (selectedMotherboard) {
-      const ddrType = selectedMotherboard.ddrtype;
-      fetchRamByDdrType(ddrType);
+    if (selectedAio) {
+      fetchCabinetsByAioLength(selectedAio.len.replace(/[^\d]/g, ""), 10);
     }
-  }, [selectedMotherboard]);
+  }, [selectedAio]);
 
   return (
     <div className="dropdown-container">
-      {/* Brand Dropdown */}
+      {/* Processor Brand Dropdown */}
       <label className="dropdown-label">Select Processor Brand:</label>
       <div className="dropdown">
         <select
@@ -240,7 +257,7 @@ const RigBuilder = () => {
         </select>
       </div>
 
-      {/* Processors Dropdown */}
+      {/* Processor Dropdown */}
       <label className="dropdown-label">Select Processor:</label>
       <div className="dropdown">
         <select
@@ -260,20 +277,14 @@ const RigBuilder = () => {
         </select>
       </div>
 
-      {/* Motherboards Dropdown */}
+      {/* Motherboard Dropdown */}
       {selectedProcessor && (
         <div>
           <label className="dropdown-label">Select Motherboard:</label>
           <div className="dropdown">
             <select
               value={selectedMotherboard?.id || ""}
-              onChange={(e) => {
-                const motherboard = motherboards.find(
-                  (m) => m.id === parseInt(e.target.value)
-                );
-                setSelectedMotherboard(motherboard);
-                fetchRamByDdrType(motherboard.ddrtype);
-              }}
+              onChange={handleMotherboardChange}
               className="dropdown-select"
             >
               {motherboards.length > 0
@@ -316,7 +327,7 @@ const RigBuilder = () => {
           <label className="dropdown-label">Select SSD:</label>
           <div className="dropdown">
             <select
-              value={selectedRam?.id || ""}
+              value={selectedSsd?.id || ""}
               onChange={handleSsdChange}
               className="dropdown-select"
             >
@@ -333,12 +344,12 @@ const RigBuilder = () => {
       )}
 
       {/* GPU Dropdown */}
-      {selectedRam && (
+      {selectedSsd && (
         <div>
           <label className="dropdown-label">Select GPU:</label>
           <div className="dropdown">
             <select
-              value={selectedRam?.id || ""}
+              value={selectedGpu?.id || ""}
               onChange={handleGpuChange}
               className="dropdown-select"
             >
@@ -355,12 +366,12 @@ const RigBuilder = () => {
       )}
 
       {/* AIO Dropdown */}
-      {selectedRam && (
+      {selectedGpu && (
         <div>
           <label className="dropdown-label">Select AIO:</label>
           <div className="dropdown">
             <select
-              value={selectedRam?.id || ""}
+              value={selectedAio?.id || ""}
               onChange={handleAioChange}
               className="dropdown-select"
             >
@@ -377,7 +388,7 @@ const RigBuilder = () => {
       )}
 
       {/* PSU Dropdown */}
-      {selectedRam && (
+      {selectedAio && (
         <div>
           <label className="dropdown-label">Select PSU:</label>
           <div className="dropdown">
@@ -385,10 +396,37 @@ const RigBuilder = () => {
               {psus.length > 0
                 ? psus.map((psu) => (
                     <option key={psu.id} value={psu.id}>
-                      {psu.name} - {psu.watt} - {psu.price}$
+                      {psu.name} - {psu.watt}W - {psu.price}$
                     </option>
                   ))
                 : !loading && <option>No PSUs available</option>}
+            </select>
+          </div>
+        </div>
+      )}
+      {/* Cabinet Dropdown */}
+      {selectedAio && (
+        <div>
+          <label className="dropdown-label">Select Cabinet:</label>
+          <div className="dropdown">
+            <select
+              value={selectedCabinet?.id || ""}
+              onChange={(e) =>
+                setSelectedCabinet(
+                  cabinets.find(
+                    (cabinet) => cabinet.id === parseInt(e.target.value)
+                  )
+                )
+              }
+              className="dropdown-select"
+            >
+              {cabinets.length > 0
+                ? cabinets.map((cabinet) => (
+                    <option key={cabinet.id} value={cabinet.id}>
+                      {cabinet.name} - {cabinet.price}$
+                    </option>
+                  ))
+                : !loading && <option>No cabinets available</option>}
             </select>
           </div>
         </div>
