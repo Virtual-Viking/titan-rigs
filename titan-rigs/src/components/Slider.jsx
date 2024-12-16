@@ -80,7 +80,7 @@ const Slider = ({ onCategoryChange }) => {
       {/* Departments List code startt not in navbar.jsx, here here, only here */}
       <div className="departments-container">
         <h3 className="departments-header" onClick={() => handleRig()}>
-          Departments
+          RIG-BUILDER
         </h3>
         <ul className="department-list">
           <li onClick={() => handleCategoryClick("processors")}>Processors</li>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./searchbar.css";
+import { Link } from "react-router-dom";
 import cartIcon from "/src/assets/shopping-cart.svg"; // Cart icon
 import logo from "/src/assets/logo.svg"; // Replace with your logo path
 import Lottie from "lottie-react"; // Import Lottie for animation
@@ -9,13 +10,21 @@ const Searchbar = () => {
   const [cartItems, setCartItems] = useState(0); // Number of items in cart
   const [totalPrice, setTotalPrice] = useState(0.0); // Total cart price
   const [selectedCategory, setSelectedCategory] = useState("All Categories"); // Default category
-  const categories = ["All Categories", "Electronics", "Fashion", "Home", "Books"];
+  const categories = [
+    "All Categories",
+    "Electronics",
+    "Fashion",
+    "Home",
+    "Books",
+  ];
 
   return (
     <div className="searchbar-container">
       {/* Logo */}
       <div className="searchbar-logo">
-        <img src={logo} alt="Logo" className="logo" />
+        <Link to="/">
+          <img src={logo} alt="Logo" className="logo" />
+        </Link>
       </div>
 
       {/* Search Bar */}
@@ -56,5 +65,3 @@ const Searchbar = () => {
 };
 
 export default Searchbar;
-
-
