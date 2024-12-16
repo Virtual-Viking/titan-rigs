@@ -5,9 +5,10 @@ import SearchBar from "./components/SearchBar";
 import Slider from "./components/Slider";
 import Footer from "./components/Footer";
 import ProductGrid from "./components/ProductGrid";
-import ProductPage from "./components/ProductPage";
+import ProductPage from "./components/productPage";
 import CategoryPage from "./components/CategoryPage";
 import RigBuilder from "./components/RigBuilder";
+import AddToCartPage from "./components/AddToCartPage";
 
 const App = () => {
   const [category, setCategory] = useState(null);
@@ -43,6 +44,8 @@ const App = () => {
           <Route path="/category/:categoryName" element={<CategoryPage />} />
 
           <Route path="/rig-builder" element={<RigBuilder />} />
+
+          <Route path="/add-to-cart" element={<AddToCartPage />} />
         </Routes>
         <Footer />
       </div>

@@ -54,10 +54,10 @@ const Searchbar = () => {
 
       {/* Cart Icon */}
       <div className="searchbar-cart">
-        <div className="cart-icon-wrapper">
+        <Link to="/add-to-cart" className="cart-icon-wrapper">
           <img src={cartIcon} alt="Cart" className="cart-icon" />
           <div className="cart-bubble">{cartItems}</div>
-        </div>
+        </Link>
         <span className="cart-total">${totalPrice.toFixed(2)}</span>
       </div>
     </div>

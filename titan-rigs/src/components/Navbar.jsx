@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./Navbar.css";
+import { Link } from "react-router-dom";
 import LoginModal from "./LoginPage"; // Ensure this points to the correct Login Modal component
 import userIcon from "../assets/people.svg";
 import cartIcon from "../assets/shopping-cart.svg";
@@ -37,7 +38,9 @@ const Navbar = () => {
     <div className="top-navbar">
       <div className="navbar-content">
         {/* Left Section */}
-        <div className="navbar-left">Titan-Rigs: One stop solution for all computer needs.</div>
+        <div className="navbar-left">
+          Titan-Rigs: One stop solution for all computer needs.
+        </div>
 
         {/* Right Section */}
         <div className="navbar-right">
@@ -58,10 +61,10 @@ const Navbar = () => {
             </>
           )}
 
-          <a href="/cart" className="navbar-icon">
+          <Link to="/add-to-cart" className="navbar-icon">
             <img src={cartIcon} alt="Cart" />
             Cart
-          </a>
+          </Link>
           <div className="navbar-divider"></div>
 
           {/* User Icon */}
@@ -98,5 +101,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-
