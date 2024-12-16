@@ -3,7 +3,7 @@ import { CartContext } from "../context/CartContext"; // Import the CartContext
 import "./CheckoutPage.css";
 
 const CheckoutPage = () => {
-  const { cart } = useContext(CartContext); // Access the cart from context
+  const { cart, clearCart } = useContext(CartContext); // Access the cart from context
   const [orderPlaced, setOrderPlaced] = useState(false); // State to check if the order is placed
   const [error, setError] = useState(""); // State to store any error message
 
@@ -49,6 +49,7 @@ const CheckoutPage = () => {
 
       if (response.ok) {
         setOrderPlaced(true); // Mark the order as placed
+        clearCart();
         console.log("Order placed successfully:", data);
       } else {
         console.error("Error placing order:", data);
