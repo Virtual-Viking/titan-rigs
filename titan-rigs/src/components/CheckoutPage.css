@@ -1,4 +1,6 @@
 /* CheckoutPage.css */
+
+/* General page styling */
 .checkout-page {
   max-width: 1280px;
   margin: 0 auto;
@@ -7,14 +9,17 @@
   text-align: center;
 }
 
+/* Heading */
 h1 {
   font-size: 2rem;
   color: #28a745;
   margin-bottom: 20px;
 }
 
+/* Bill summary styling */
 .bill-summary {
   margin-top: 30px;
+  margin-bottom: 15px;
   background-color: #f9f9f9;
   padding: 20px;
   border-radius: 8px;
@@ -26,6 +31,7 @@ h1 {
   margin-bottom: 20px;
 }
 
+/* Order items styling */
 .order-items {
   display: flex;
   flex-direction: column;
@@ -73,6 +79,7 @@ h1 {
   color: #333;
 }
 
+/* Confirmation message */
 .confirmation-message {
   margin-top: 30px;
   background-color: #e1f7e1;
@@ -86,6 +93,7 @@ h1 {
   margin-bottom: 20px;
 }
 
+/* Back to home button */
 .back-to-home-button {
   background-color: #007bff;
   color: white;
@@ -99,4 +107,31 @@ h1 {
 
 .back-to-home-button:hover {
   background-color: #0056b3;
+}
+
+.place-order-button {
+  background-color: #28a745;
+  color: white;
+  padding: 12px 30px;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s ease-in-out;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.place-order-button:hover {
+  background-color: #218838; /* Darker green on hover */
+  transform: translateY(-3px); /* Slight lift effect */
+}
+
+.place-order-button:active {
+  background-color: #1e7e34; /* Even darker green when clicked */
+  transform: translateY(0); /* Reset the lift effect */
+}
+
+.place-order-button:focus {
+  outline: none;
+  box-shadow: 0px 0px 8px rgba(40, 167, 69, 0.5); /* Green glow when focused */
 }
