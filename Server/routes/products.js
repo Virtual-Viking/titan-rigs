@@ -140,7 +140,7 @@ router.get("/category/:categoryName", async (req, res) => {
   const { categoryName } = req.params;
 
   try {
-    const query = `SELECT * FROM ${mysql.escapeId(categoryName)}`;
+    const query = `SELECT '${categoryName}' AS category, * FROM ${mysql.escapeId(categoryName)}`;
     const [rows] = await db.execute(query);
 
     if (rows.length === 0) {
@@ -241,7 +241,7 @@ router.get("/processors/:brand", async (req, res) => {
     `;
 
     const [rows] = await db.execute(query, [brand]);
-
+2
     if (rows.length === 0) {
       return res
         .status(404)
