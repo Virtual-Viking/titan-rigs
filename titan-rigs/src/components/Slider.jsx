@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import "./Slider.css";
 import Lottie from "lottie-react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "./Slider.css";
 
 import pauseAnimation from "/src/assets/pause.json";
 
@@ -79,10 +79,11 @@ const Slider = ({ onCategoryChange }) => {
 
       {/* Departments List code startt not in navbar.jsx, here here, only here */}
       <div className="departments-container">
-        <h3 className="departments-header" onClick={() => handleRig()}>
-          RIG-BUILDER
-        </h3>
+        
         <ul className="department-list">
+        <li className="departments-header" onClick={() => handleRig()}>
+          RIG-BUILDER
+        </li>
           <li onClick={() => handleCategoryClick("processors")}>Processors</li>
           <li onClick={() => handleCategoryClick("motherboard")}>
             Motherboards
