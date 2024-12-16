@@ -3,8 +3,6 @@ const router = express.Router();
 const multer = require("multer");
 const path = require("path");
 const mysql = require("mysql2/promise");
-const mysql = require("mysql2/promise"); 
-
 
 // Import db connection (ensure this is properly set up in your project)
 const db = require("../db"); // Adjust the path as per your project structure
@@ -138,45 +136,12 @@ router.get("/", async (req, res) => {
   }
 });
 
-// do not touch this api or category page fil fetch no data
-router.get('/category/:categoryName', async (req, res) => {
+router.get("/category/:categoryName", async (req, res) => {
   const { categoryName } = req.params;
-  try {
-    const query = `SELECT id, name, price, brand, qty FROM ${categoryName}`;
-    const [products] = await db.query(query);
-    res.json({ products });
-  } catch (error) {
-    console.error('Error fetching category products:', error);
-    res.status(500).json({ error: 'Failed to fetch products for this category.' });
-  }
-});
 
-router.get('/product/:id', async (req, res) => {
-  const { id } = req.params;
-  console.log(`Fetching product details for ID: ${id}`);
   try {
-    const productQuery = `
-      SELECT * FROM (
-        SELECT 'processors' AS category, id, name, price, brand, qty FROM processors
-        UNION ALL
-        SELECT 'motherboards' AS category, id, name, price, brand, qty FROM motherboards
-        UNION ALL
-        SELECT 'gpus' AS category, id, name, price, brand, qty FROM gpus
-        UNION ALL
-        SELECT 'rams' AS category, id, name, price, brand, qty FROM rams
-        UNION ALL
-        SELECT 'psus' AS category, id, name, price, brand, qty FROM psus
-        UNION ALL
-        SELECT 'aios' AS category, id, name, price, brand, qty FROM aios
-        UNION ALL
-        SELECT 'cabinets' AS category, id, name, price, brand, qty FROM cabinets
-        UNION ALL
-        SELECT 'ssds' AS category, id, name, price, brand, qty FROM ssds
-      ) AS all_products
-      WHERE id = ?;
-    `;
-
-    const [productResults] = await db.query(productQuery, [id]);
+    const query = `SELECT * FROM ${mysql.escapeId(categoryName)}`;
+    const [rows] = await db.execute(query);
 
     if (rows.length === 0) {
       return res
@@ -185,31 +150,11 @@ router.get('/product/:id', async (req, res) => {
     }
 
     res.json({ products: rows });
-    if (!productResults.length) {
-      return res.status(404).json({ error: 'Product not found' });
-    }
-
-    const product = productResults[0];
-
-    // Query to fetch product images
-    const imageQuery = `SELECT image_url FROM product_images WHERE product_id = ?`;
-    const [imageResults] = await db.query(imageQuery, [id]);
-
-    // Query to fetch product description
-    const descriptionQuery = `SELECT description FROM product_descriptions WHERE product_id = ?`;
-    const [descriptionResults] = await db.query(descriptionQuery, [id]);
-
-    res.json({
-      product,
-      images: imageResults.map((img) => img.image_url),
-      description: descriptionResults.length ? descriptionResults[0].description : '',
-    });
   } catch (error) {
-    console.error('Error fetching product details:', error);
-    res.status(500).json({ error: 'Failed to fetch product details.' });
+    console.error("Error fetching category products:", error.message);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
-
 
 // get image api for productgrid.jsx
 router.get("/images/:productType/:productId", async (req, res) => {
@@ -260,62 +205,6 @@ router.get("/category/images/:categoryName/:productId", async (req, res) => {
   }
 });
 
-// for ProductPage.jsx
-router.get("/search", async (req, res) => {
-  const { name, category } = req.query;
-
-  if (!name || !category) {
-    return res.status(400).json({ error: "Product name and category are required" });
-  }
-
-  try {
-    const validCategories = [
-      "processors",
-      "motherboard",
-      "gpu",
-      "ram",
-      "psu",
-      "aio",
-      "cabinet",
-      "ssd",
-    ];
-
-    if (!validCategories.includes(category.toLowerCase())) {
-      return res.status(400).json({ error: "Invalid category name" });
-    }
-
-    const productQuery = `
-      SELECT * FROM ${category}
-      WHERE name = ?
-      LIMIT 1;
-    `;
-    const [productRows] = await db.query(productQuery, [name]);
-
-    if (productRows.length === 0) {
-      return res.status(404).json({ error: "Product not found" });
-    }
-
-    const product = productRows[0];
-
-    const imageQuery = `
-      SELECT image_url FROM product_images
-      WHERE product_id = ?
-      LIMIT 1;
-    `;
-    const [imageRows] = await db.query(imageQuery, [product.id]);
-
-    res.json({
-      product,
-      image: imageRows.length > 0 ? imageRows[0].image_url : "No image available",
-    });
-  } catch (error) {
-    console.error("Error fetching product details:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-
-
 // POST: Add New Product
 router.post("/", upload.single("image"), async (req, res) => {
   const { name, price, category } = req.body;
@@ -333,18 +222,6 @@ router.post("/", upload.single("image"), async (req, res) => {
   }
 });
 
-
-
-// check connection
-router.get('/health-check', async (req, res) => {
-  try {
-    const [rows] = await db.query('SELECT 1 + 1 AS result');
-    res.json({ success: true, message: 'Database connection is working', result: rows[0].result });
-  } catch (error) {
-    console.error('Database connection failed:', error.message);
-    res.status(500).json({ success: false, error: 'Database connection failed' });
-  }
-});
 // GET: Fetch processors by brand
 router.get("/processors/:brand", async (req, res) => {
   const { brand } = req.params;
@@ -410,29 +287,131 @@ router.get("/motherboards/:chipset", async (req, res) => {
 });
 
 // GET: RAM based on DDR type
-router.get("/ram/:ddrtype", (req, res) => {
+router.get("/ram/:ddrtype", async (req, res) => {
   const { ddrtype } = req.params;
 
-  const query = "SELECT * FROM ram WHERE ddrtype = ?";
+  console.log(`Request received for DDR type: ${ddrtype}`);
 
-  db.query(query, [ddrtype], (err, results) => {
-    if (err) {
-      console.error("Error querying database:", err);
-      return res
-        .status(500)
-        .json({ message: "Server error while fetching RAM" });
-    }
+  try {
+    const query = `
+      SELECT * 
+      FROM ram
+      WHERE ddrtype = ?
+      ORDER BY name;
+    `;
 
-    if (results.length === 0) {
+    const [rows] = await db.execute(query, [ddrtype]);
+
+    if (rows.length === 0) {
       return res
         .status(404)
-        .json({ message: `No RAM modules found for DDR type: ${ddrtype}` });
+        .json({ message: `No RAM found for DDR type: ${ddrtype}` });
     }
 
-    // Return the RAM modules found
-    res.json({ ram: results });
-  });
+    res.json({ ram: rows });
+  } catch (err) {
+    console.error("Error fetching RAM by DDR type:", err.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
+// GET: Fetch all SSDs
+router.get("/ssds", async (req, res) => {
+  try {
+    const query = `
+      SELECT * 
+      FROM ssd
+      ORDER BY name;
+    `;
+
+    const [rows] = await db.execute(query);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "No SSDs found" });
+    }
+
+    res.json({ ssds: rows });
+  } catch (err) {
+    console.error("Error fetching SSDs:", err.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// GET: Fetch all GPUs
+router.get("/gpus", async (req, res) => {
+  try {
+    const query = `
+      SELECT * 
+      FROM gpu
+      ORDER BY name;
+    `;
+    const [rows] = await db.execute(query);
+
+    // If no GPUs found, return a 404 response
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "No GPUs found" });
+    }
+
+    res.json({ gpus: rows });
+  } catch (err) {
+    console.error("Error fetching GPUs:", err.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// GET: Fetch all AIOs
+router.get("/aios", async (req, res) => {
+  try {
+    // Query to fetch all AIOs
+    const query = `
+      SELECT * 
+      FROM aio
+      ORDER BY name;
+    `;
+
+    const [rows] = await db.execute(query);
+
+    // If no AIOs found, return a 404 response
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "No AIO coolers found" });
+    }
+
+    res.json({ aios: rows });
+  } catch (err) {
+    // Log the error and send a 500 response if an exception occurs
+    console.error("Error fetching AIO coolers:", err.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/psu/:maxtdp", async (req, res) => {
+  const { maxtdp } = req.params; // Extract `maxtdp` from URL parameters
+
+  console.log(`Request received for PSU with minimum wattage: ${maxtdp * 3}`);
+
+  try {
+    const minWatt = maxtdp * 3; // Calculate PSU wattage threshold (maxtdp * 3)
+
+    const query = `
+      SELECT * 
+      FROM psu
+      WHERE watt > ?
+      ORDER BY watt;
+    `;
+
+    const [rows] = await db.execute(query, [minWatt]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        message: `No PSUs found with wattage greater than ${minWatt}`,
+      });
+    }
+
+    res.json({ psus: rows });
+  } catch (err) {
+    console.error("Error fetching PSUs:", err.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 module.exports = router;
