@@ -8,6 +8,7 @@ import pauseAnimation from "/src/assets/pause.json";
 const Slider = ({ onCategoryChange }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [activeCategory, setActiveCategory] = useState(null); // State to track active category
   const navigate = useNavigate();
 
   const slides = [
@@ -60,6 +61,7 @@ const Slider = ({ onCategoryChange }) => {
   };
 
   const handleCategoryClick = (category) => {
+    setActiveCategory(category); // Set the active category
     if (onCategoryChange) {
       onCategoryChange(category);
     }
@@ -69,6 +71,7 @@ const Slider = ({ onCategoryChange }) => {
   const handleRig = () => {
     navigate("/rig-builder");
   };
+
   return (
     <div className="slider-wrapper">
       {/* Background Color */}
@@ -77,27 +80,66 @@ const Slider = ({ onCategoryChange }) => {
         style={{ backgroundColor: slides[currentSlide].bgColor }}
       ></div>
 
-      {/* Departments List code startt not in navbar.jsx, here here, only here */}
+      {/* Departments List */}
       <div className="departments-container">
-        
         <ul className="department-list">
-        <li className="departments-header" onClick={() => handleRig()}>
-          RIG-BUILDER
-        </li>
-          <li onClick={() => handleCategoryClick("processors")}>Processors</li>
-          <li onClick={() => handleCategoryClick("motherboard")}>
+          <li className="departments-header" onClick={() => handleRig()}>
+            RIG-BUILDER
+          </li>
+          <li
+            onClick={() => handleCategoryClick("processors")}
+            className={activeCategory === "processors" ? "active-category" : ""}
+          >
+            Processors
+          </li>
+          <li
+            onClick={() => handleCategoryClick("motherboard")}
+            className={
+              activeCategory === "motherboard" ? "active-category" : ""
+            }
+          >
             Motherboards
           </li>
-          <li onClick={() => handleCategoryClick("gpu")}>GPUs</li>
-          <li onClick={() => handleCategoryClick("ram")}>RAM</li>
-          <li onClick={() => handleCategoryClick("psu")}>PSUs</li>
-          <li onClick={() => handleCategoryClick("aio")}>AIOs</li>
-          <li onClick={() => handleCategoryClick("cabinet")}>Cabinets</li>
-          <li onClick={() => handleCategoryClick("ssd")}>SSDs</li>
+          <li
+            onClick={() => handleCategoryClick("gpu")}
+            className={activeCategory === "gpu" ? "active-category" : ""}
+          >
+            GPUs
+          </li>
+          <li
+            onClick={() => handleCategoryClick("ram")}
+            className={activeCategory === "ram" ? "active-category" : ""}
+          >
+            RAM
+          </li>
+          <li
+            onClick={() => handleCategoryClick("psu")}
+            className={activeCategory === "psu" ? "active-category" : ""}
+          >
+            PSUs
+          </li>
+          <li
+            onClick={() => handleCategoryClick("aio")}
+            className={activeCategory === "aio" ? "active-category" : ""}
+          >
+            AIOs
+          </li>
+          <li
+            onClick={() => handleCategoryClick("cabinet")}
+            className={activeCategory === "cabinet" ? "active-category" : ""}
+          >
+            Cabinets
+          </li>
+          <li
+            onClick={() => handleCategoryClick("ssd")}
+            className={activeCategory === "ssd" ? "active-category" : ""}
+          >
+            SSDs
+          </li>
         </ul>
       </div>
 
-      {/* tarun please place slider code here, without messing the structure, dont use chatgpt use brain.exe  */}
+      {/* Slider */}
       <div className="slider">
         <a href={slides[currentSlide].link}>
           <img
@@ -125,7 +167,5 @@ const Slider = ({ onCategoryChange }) => {
     </div>
   );
 };
-
-
 
 export default Slider;
