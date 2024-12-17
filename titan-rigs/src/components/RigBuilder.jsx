@@ -101,6 +101,7 @@ const RigBuilder = () => {
     }
   };
 
+  // Fetch RAM based on the ddrType in motherboard
   const fetchRamByDdrType = async (ddrType) => {
     setLoading(true);
     setError("");
@@ -138,6 +139,7 @@ const RigBuilder = () => {
     }
   };
 
+  // Fetch all the SSDs
   const fetchAllSsds = async () => {
     setLoading(true);
     setError("");
@@ -173,6 +175,7 @@ const RigBuilder = () => {
     }
   };
 
+  // Fetch all the GPUs
   const fetchAllGpus = async () => {
     setLoading(true);
     setError("");
